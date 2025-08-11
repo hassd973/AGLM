@@ -14,13 +14,17 @@
 :root{
   /* ORIGINAL BRAND PALETTE (restored exactly) */
   --bg:#f7f6f3;          /* porcelain paper */
-  --ink:#111111;         /* near-black */
+  /* Main logo colors */
   --blue1:#2c6fb1;       /* primary blue */
   --blue2:#6fb1ff;       /* sky */
   --blue3:#1d3f73;       /* deep blue */
+  --orange:#de9146;      /* logo orange */
+  --ink:#111111;         /* near-black */
+  /* Extended blues */
   --blueA:#294b81;       /* extended */
   --blueB:#6b89bd;
   --blueC:#335694;
+  /* Neutrals */
   --neutral1:#efe5d7;    /* oat */
   --neutral2:#ebe9d5;    /* bone */
   --neutral3:#f3f0ec;    /* porcelain */
@@ -58,7 +62,8 @@ img{max-width:100%;height:auto}
   box-shadow:0 0 0 6px color-mix(in srgb, var(--blue1) 12%, transparent);
 }
 /* Title readability (no condensation) */
-.brand h1{ font-family:'Sora', sans-serif; font-weight:700; font-size:22px; margin:0; letter-spacing:.01em; line-height:1.2 }
+.brand h1{ font-family:'Sora', sans-serif; font-weight:400; font-size:48px; margin:0; letter-spacing:.01em; line-height:1.2 }
+@media(max-width:700px){ .brand h1{ font-size:32px } }
 
 .header nav{display:flex; gap:14px; flex-wrap:wrap}
 .header a{ text-decoration:none; color:var(--ink); font-size:14px; opacity:.85; padding:6px 10px; border-radius:8px; }
@@ -107,7 +112,7 @@ button.secondary{ background:#fff; color:var(--ink); border:1px solid color-mix(
 .swatch .chip{ height:56px; border-radius:12px; margin-bottom:10px }
 .swatch code{ font-family:'Sora', sans-serif; font-size:13px; color:#333; }
 /* Sixtyfour ONLY here for color titles */
-.swatch h4{ margin:2px 0 6px; font-family:'Sixtyfour', sans-serif; font-weight:400; letter-spacing:.02em; font-variation-settings:"BLED" 0, "SCAN" 0 }
+.swatch h4{ margin:2px 0 6px; font-family:'Sixtyfour', sans-serif; font-weight:200; letter-spacing:.02em; font-variation-settings:"BLED" 0, "SCAN" 0 }
 
 /* Typography examples */
 .type-row{ display:grid; grid-template-columns:1fr; gap:8px }
@@ -123,9 +128,13 @@ button.secondary{ background:#fff; color:var(--ink); border:1px solid color-mix(
 .canvas.portrait{ aspect-ratio:4/5 }
 .canvas.landscape{ aspect-ratio:16/9 }
 .canvas .ghost{ opacity:.22; font-family:'Modak', cursive; letter-spacing:.04em }
+.canvas img{ width:80%; height:auto; }
+.download{ margin-top:6px; font-size:12px; }
+.kinetic-frame{ width:100%; height:400px; border:0; border-radius:12px; }
 
 /* Section headings */
-h3.section{ font-family:'Sora', sans-serif; font-weight:700; margin:28px 0 12px; font-size:22px; letter-spacing:.01em }
+h3.section{ font-family:'Sora', sans-serif; font-weight:400; margin:28px 0 12px; font-size:48px; letter-spacing:.01em }
+@media(max-width:700px){ h3.section{ font-size:32px } }
 
 footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 
@@ -146,6 +155,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       <a href="#overview">Overview</a>
       <a href="#logo">Logo Usage</a>
       <a href="#colors">Colors</a>
+      <a href="#kinetic">Kinetic Typography</a>
       <a href="#type">Typography</a>
       <a href="#templates">Social Templates</a>
       <a href="#photos">Photo Direction</a>
@@ -215,16 +225,22 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       <div class="swatch"><div class="chip" style="background:var(--blue1)"></div><h4>Primary Blue</h4><code>#2C6FB1</code></div>
       <div class="swatch"><div class="chip" style="background:var(--blue2)"></div><h4>Sky</h4><code>#6FB1FF</code></div>
       <div class="swatch"><div class="chip" style="background:var(--blue3)"></div><h4>Deep Blue</h4><code>#1D3F73</code></div>
+      <div class="swatch"><div class="chip" style="background:var(--orange)"></div><h4>Logo Orange</h4><code>#DE9146</code></div>
+      <div class="swatch"><div class="chip" style="background:var(--ink)"></div><h4>Ink</h4><code>#111111</code></div>
       <div class="swatch"><div class="chip" style="background:var(--blueA)"></div><h4>Blue A</h4><code>#294B81</code></div>
       <div class="swatch"><div class="chip" style="background:var(--blueB)"></div><h4>Blue B</h4><code>#6B89BD</code></div>
       <div class="swatch"><div class="chip" style="background:var(--blueC)"></div><h4>Blue C</h4><code>#335694</code></div>
-      <div class="swatch"><div class="chip" style="background:var(--ink)"></div><h4>Ink</h4><code>#111111</code></div>
       <div class="swatch"><div class="chip" style="background:var(--neutral3)"></div><h4>Porcelain</h4><code>#F3F0EC</code></div>
       <div class="swatch"><div class="chip" style="background:var(--neutral2)"></div><h4>Bone</h4><code>#EBE9D5</code></div>
       <div class="swatch"><div class="chip" style="background:var(--neutral1)"></div><h4>Oat</h4><code>#EFE5D7</code></div>
       <div class="swatch"><div class="chip" style="background:var(--rose)"></div><h4>Rose Accent</h4><code>#DBB5C2</code></div>
     </div>
     <p style="margin-top:10px; color:#555; font-size:13px">All UI and illustrations should reference these CSS tokens. Neutrals for surfaces; blues for hero/accents; rose sparingly.</p>
+  </section>
+
+  <section id="kinetic" class="card" style="margin-top:22px">
+    <h3 class="section">Kinetic Typography</h3>
+    <iframe src="kinetic-typography.html" title="Kinetic Typography" class="kinetic-frame"></iframe>
   </section>
 
   <section id="type" class="card" style="margin-top:22px">
@@ -243,17 +259,21 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 
   <section id="templates" class="card" style="margin-top:22px">
     <h3 class="section">Social Templates</h3>
+    <button id="cycleLogo" class="btn secondary" style="margin-bottom:14px">Next Logo</button>
     <div class="templates">
       <div class="frame">
-        <div class="canvas square"><div class="ghost">1×1</div></div>
+        <div class="canvas square"><img class="template-img" alt="Logo"><div class="ghost">1×1</div></div>
+        <button class="download" data-size="square">Download 1×1</button>
         <div style="font-size:12px; margin-top:6px; color:#555">Profile / Grid</div>
       </div>
       <div class="frame">
-        <div class="canvas portrait"><div class="ghost">4×5</div></div>
+        <div class="canvas portrait"><img class="template-img" alt="Logo"><div class="ghost">4×5</div></div>
+        <button class="download" data-size="portrait">Download 4×5</button>
         <div style="font-size:12px; margin-top:6px; color:#555">IG Portrait</div>
       </div>
       <div class="frame">
-        <div class="canvas landscape"><div class="ghost">16×9</div></div>
+        <div class="canvas landscape"><img class="template-img" alt="Logo"><div class="ghost">16×9</div></div>
+        <button class="download" data-size="landscape">Download 16×9</button>
         <div style="font-size:12px; margin-top:6px; color:#555">Video / YouTube</div>
       </div>
     </div>
@@ -446,6 +466,38 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 
   btn?.addEventListener('click', exportPNG);
   toggle?.addEventListener('click', toggleBG);
+})();
+
+// Social template logo cycling & downloads
+(function(){
+  const logos=['assets/logo-top-1.svg','assets/logo-top-2.svg','assets/logo-top-3.svg'];
+  let idx=0;
+  const imgs=document.querySelectorAll('.template-img');
+  const ghosts=document.querySelectorAll('.canvas .ghost');
+  function render(){
+    imgs.forEach(img=>{ img.src=logos[idx]; });
+    ghosts.forEach(g=> g.style.display='none');
+  }
+  document.getElementById('cycleLogo')?.addEventListener('click',()=>{ idx=(idx+1)%logos.length; render(); });
+  render();
+
+  function download(type){
+    const map={square:[1080,1080],portrait:[1080,1350],landscape:[1920,1080]};
+    const [w,h]=map[type];
+    const canvas=document.createElement('canvas');
+    canvas.width=w; canvas.height=h;
+    const ctx=canvas.getContext('2d');
+    const img=new Image();
+    img.crossOrigin='anonymous';
+    img.onload=()=>{
+      const scale=Math.min((w*0.8)/img.width,(h*0.8)/img.height);
+      const dw=img.width*scale; const dh=img.height*scale;
+      ctx.drawImage(img,(w-dw)/2,(h-dh)/2,dw,dh);
+      canvas.toBlob(b=>{const a=document.createElement('a');a.download=`AGLM_${type}.png`;a.href=URL.createObjectURL(b);a.click();URL.revokeObjectURL(a.href);});
+    };
+    img.src=logos[idx];
+  }
+  document.querySelectorAll('.download').forEach(btn=>btn.addEventListener('click',()=>download(btn.dataset.size)));
 })();
 </script>
 </body>
