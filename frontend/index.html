@@ -78,6 +78,7 @@ body{
 .sprite{ position:absolute; width:clamp(24px,2.6vw,34px); transform-origin:50% 60%;
          opacity:.95; filter:drop-shadow(0 2px 2px rgba(0,0,0,.12)); animation:floatY var(--dur,6s) ease-in-out infinite }
 .sprite svg{ display:block; width:100%; height:auto }
+.invert{ filter:brightness(0) invert(1); }
 .sprite .wing{ animation:flap var(--flap,1200ms) ease-in-out infinite; }
 @keyframes flap{ 0%,100%{ transform:rotate(0) } 50%{ transform:rotate(var(--arc,14deg)) } }
 @keyframes floatY{ 0%,100%{ transform:translateY(-6px) rotate(var(--start,0deg)) } 50%{ transform:translateY(6px) rotate(var(--end,-2deg)) } }
@@ -184,8 +185,12 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
           <img src="../assets/logo-top-1.svg" alt="Logo on light" style="width:72%;height:auto"/>
         </div>
         <div class="stage" style="aspect-ratio:1/1; background:#111">
-          <img src="../assets/logo-alt-bg.svg" alt="Logo on dark" style="width:72%;height:auto"/>
+          <img src="../assets/logo-top-1.svg" alt="Logo on dark" class="invert" style="width:72%;height:auto"/>
         </div>
+      </div>
+      <div class="actions" style="margin-top:10px">
+        <a class="btn" href="../assets/logo-top-1.svg" download>Download SVG</a>
+        <button onclick="downloadPNG('../assets/logo-top-1.svg','logo-top-1.png')">PNG</button>
       </div>
     </div>
   </section>
