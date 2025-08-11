@@ -89,8 +89,12 @@ body{
   border-radius:20px; overflow:hidden;
 }
 .stage .overlay-note{
-  position:absolute; bottom:10px; right:10px; font-size:12px; background:rgba(255,255,255,.8); padding:6px 10px; border-radius:10px;
-  color:#333; box-shadow:0 6px 20px rgba(0,0,0,.08);
+  position:absolute; bottom:10px; right:10px; font-size:12px; padding:6px 10px; border-radius:10px;
+  color:#333;
+  background:rgba(255,255,255,.4);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.3);
+  box-shadow:0 6px 20px rgba(0,0,0,.08);
 }
 
 .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px }
@@ -121,6 +125,11 @@ button.secondary{ background:#fff; color:var(--ink); border:1px solid color-mix(
 .canvas.square{ aspect-ratio:1/1 }
 .canvas.portrait{ aspect-ratio:4/5 }
 .canvas.landscape{ aspect-ratio:16/9 }
+
+@media (max-width:600px){
+  .grid{grid-template-columns:1fr;}
+  .header{flex-direction:column; align-items:flex-start;}
+}
 
 /* Section headings */
 h3.section{ font-family: Faculty Glyphic, serif; margin:28px 0 12px; font-size:22px; letter-spacing:.02em }
@@ -156,16 +165,11 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     <p>This page previews the <strong>2025</strong> brand system. For now, motion is kept <em>light</em>: the bird and butterfly float idly while we prepare more complex kinetic typography. Export a high‑res transparent PNG of the main logo anytime.</p>
   </section>
 
-  <section id="kinetic" class="card" style="margin-top:22px">
-    <h3 class="section">Kinetic Typography</h3>
-    <iframe src="kinetic-typography.html" title="Kinetic Typography" style="width:100%; aspect-ratio:16/9; border:0"></iframe>
-  </section>
-
   <section id="logo" class="grid" style="margin-top:22px">
     <div class="card" style="grid-column: span 7;">
       <h3 class="section">Main Logo — “A Grief Like Mine — 1×1 Center”</h3>
       <div class="stage" id="logoStage">
-        <img id="brandLogo" src="../assets/logo-alt-bg.svg" alt="A Grief Like Mine logo" style="width:72%;height:auto"/>
+        <object id="brandLogo" data="../assets/logo-alt-bg.svg" type="image/svg+xml" style="width:72%;height:auto"></object>
         <div class="overlay-note">Centered 1×1 composition</div>
       </div>
       <div class="actions">
@@ -266,6 +270,11 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   font-variation-settings: "BLED" 0, "SCAN" 0;
 }</pre>
     </details>
+  </section>
+
+  <section id="kinetic" class="card" style="margin-top:22px">
+    <h3 class="section">Kinetic Typography</h3>
+    <iframe src="kinetic-typography.html" title="Kinetic Typography" style="width:100%; aspect-ratio:16/9; border:0"></iframe>
   </section>
 
   <section id="templates" class="card" style="margin-top:22px">
@@ -407,11 +416,11 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   const btn = document.getElementById('exportPNG');
   const toggle = document.getElementById('toggleBG');
   const stage = document.getElementById('logoStage');
-  const imgEl = document.getElementById('brandLogo');
+  const svgObj = document.getElementById('brandLogo');
 
   async function exportPNG(){
     const size = 3000;
-    const svgText = await fetch(imgEl.src).then(r=>r.text());
+    const svgText = await fetch(svgObj.data).then(r=>r.text());
     const svgBlob = new Blob([svgText], {type:'image/svg+xml;charset=utf-8'});
     const url = URL.createObjectURL(svgBlob);
     const img = new Image();
