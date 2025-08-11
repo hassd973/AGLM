@@ -103,11 +103,17 @@ button.secondary{ background:#fff; color:var(--ink); border:1px solid color-mix(
 
 /* Color swatches */
 .swatches{ display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:14px }
-.swatch{ border-radius:14px; padding:14px; background:#fff; box-shadow:var(--shadow); }
+.swatch{ border-radius:14px; padding:14px; background:#fff; box-shadow:var(--shadow); cursor:pointer; }
 .swatch .chip{ height:56px; border-radius:12px; margin-bottom:10px }
 .swatch code{ font-family:'Sora', sans-serif; font-size:13px; color:#333; }
 /* Sixtyfour ONLY here for color titles */
 .swatch h4{ margin:2px 0 6px; font-family:'Sixtyfour', sans-serif; font-weight:400; letter-spacing:.02em; font-variation-settings:"BLED" 0, "SCAN" 0 }
+
+/* Fullscreen color modal */
+.color-modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:999;}
+.color-modal.active{display:flex;}
+.color-modal .preview{width:90vw;height:90vh;border-radius:16px;position:relative;}
+.color-modal .code{position:absolute;bottom:16px;right:16px;background:rgba(255,255,255,.85);padding:8px 12px;border-radius:8px;font-family:Inconsolata,monospace;}
 
 /* Typography examples */
 .type-row{ display:grid; grid-template-columns:1fr; gap:8px }
@@ -278,6 +284,12 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   <footer>© 2025 A GRIEF LIKE MINE — Brand system preview</footer>
 </div>
 
+<div id="colorModal" class="color-modal" role="dialog" aria-modal="true">
+  <div id="colorPreview" class="preview">
+    <span id="colorCode" class="code"></span>
+  </div>
+</div>
+
 <!-- Hidden symbol rigs for the idle-only bird & butterfly -->
 <svg width="0" height="0" aria-hidden="true" focusable="false">
   <symbol id="BIRD_RIG" viewBox="0 0 100 80">
@@ -446,6 +458,29 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 
   btn?.addEventListener('click', exportPNG);
   toggle?.addEventListener('click', toggleBG);
+})();
+
+// Fullscreen color preview
+(function(){
+  const swatches = document.querySelectorAll('.swatches .swatch');
+  const modal = document.getElementById('colorModal');
+  const preview = document.getElementById('colorPreview');
+  const codeEl = document.getElementById('colorCode');
+
+  swatches.forEach(sw => {
+    sw.addEventListener('click', () => {
+      const chip = sw.querySelector('.chip');
+      const color = chip ? getComputedStyle(chip).backgroundColor : getComputedStyle(sw).backgroundColor;
+      const code = sw.querySelector('code')?.textContent || color;
+      preview.style.background = color;
+      codeEl.textContent = code;
+      modal.classList.add('active');
+    });
+  });
+
+  function hide(){ modal.classList.remove('active'); }
+  modal.addEventListener('click', hide);
+  window.addEventListener('keydown', e => { if(e.key === 'Escape') hide(); });
 })();
 </script>
 </body>
