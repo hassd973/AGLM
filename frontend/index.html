@@ -18,7 +18,7 @@
   --blue1:#2c6fb1;       /* primary blue */
   --blue2:#6fb1ff;       /* sky */
   --blue3:#1d3f73;       /* deep blue */
-  --orange:#de9146;      /* logo orange */
+  --sunset:#de9146;      /* sunset orange */
   --ink:#111111;         /* near-black */
   /* Extended blues */
   --blueA:#294b81;       /* extended */
@@ -108,11 +108,18 @@ button.secondary{ background:#fff; color:var(--ink); border:1px solid color-mix(
 
 /* Color swatches */
 .swatches{ display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:14px }
-.swatch{ border-radius:14px; padding:14px; background:#fff; box-shadow:var(--shadow); }
+.swatch{ border-radius:14px; padding:14px; background:#fff; box-shadow:var(--shadow); transition:transform .2s; cursor:pointer }
+.swatch:hover{ transform:scale(1.05) }
 .swatch .chip{ height:56px; border-radius:12px; margin-bottom:10px }
 .swatch code{ font-family:'Sora', sans-serif; font-size:13px; color:#333; }
 /* Sixtyfour ONLY here for color titles */
 .swatch h4{ margin:2px 0 6px; font-family:'Sixtyfour', sans-serif; font-weight:200; letter-spacing:.02em; font-variation-settings:"BLED" 0, "SCAN" 0 }
+
+/* Fullscreen color modal */
+.color-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.8);z-index:1000}
+.color-modal .close-modal{position:absolute;top:20px;right:20px;background:none;border:0;color:#fff;font-size:32px;cursor:pointer}
+.color-modal .modal-logos{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
+.color-modal .modal-logos img{max-width:30%;height:auto}
 
 /* Typography examples */
 .type-row{ display:grid; grid-template-columns:1fr; gap:8px }
@@ -225,7 +232,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       <div class="swatch"><div class="chip" style="background:var(--blue1)"></div><h4>Primary Blue</h4><code>#2C6FB1</code></div>
       <div class="swatch"><div class="chip" style="background:var(--blue2)"></div><h4>Sky</h4><code>#6FB1FF</code></div>
       <div class="swatch"><div class="chip" style="background:var(--blue3)"></div><h4>Deep Blue</h4><code>#1D3F73</code></div>
-      <div class="swatch"><div class="chip" style="background:var(--orange)"></div><h4>Logo Orange</h4><code>#DE9146</code></div>
+      <div class="swatch"><div class="chip" style="background:var(--sunset)"></div><h4>Sunset Orange</h4><code>#DE9146</code></div>
       <div class="swatch"><div class="chip" style="background:var(--ink)"></div><h4>Ink</h4><code>#111111</code></div>
       <div class="swatch"><div class="chip" style="background:var(--blueA)"></div><h4>Blue A</h4><code>#294B81</code></div>
       <div class="swatch"><div class="chip" style="background:var(--blueB)"></div><h4>Blue B</h4><code>#6B89BD</code></div>
@@ -326,7 +333,33 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   </symbol>
 </svg>
 
+<div id="colorModal" class="color-modal" aria-hidden="true">
+  <button class="close-modal" aria-label="Close">&times;</button>
+  <div class="modal-logos">
+    <img src="assets/logo-top-1.svg" alt="Logo variant 1">
+    <img src="assets/logo-top-2.svg" alt="Logo variant 2">
+    <img src="assets/logo-top-3.svg" alt="Logo variant 3">
+  </div>
+</div>
+
 <script>
+// Color swatch modal
+(function(){
+  const modal=document.getElementById('colorModal');
+  const close=modal.querySelector('.close-modal');
+  document.querySelectorAll('.swatch').forEach(sw=>{
+    sw.addEventListener('click',()=>{
+      const color=getComputedStyle(sw.querySelector('.chip')).backgroundColor;
+      modal.style.background=color;
+      modal.style.display='flex';
+    });
+  });
+  function hide(){modal.style.display='none';}
+  close.addEventListener('click',hide);
+  modal.addEventListener('click',e=>{if(e.target===modal)hide();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});
+})();
+
 // Idle-only floating sprites in the hero
 (function(){
   const particles = document.getElementById('particles');
