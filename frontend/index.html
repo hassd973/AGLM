@@ -88,6 +88,7 @@ img{max-width:100%;height:auto}
 /* Logo stage */
 .stage{ position:relative; display:grid; place-items:center; aspect-ratio:1/1; background:var(--neutral3); border-radius:20px; overflow:hidden; }
 .stage .overlay-note{ position:absolute; bottom:10px; right:10px; font-size:12px; background:rgba(255,255,255,.8); padding:6px 10px; border-radius:10px; color:#333; box-shadow:0 6px 20px rgba(0,0,0,.08); }
+.stage img{width:80%;height:auto}
 .fullscreen-link{position:absolute;top:10px;right:10px;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;text-decoration:none;color:#333;box-shadow:0 2px 6px rgba(0,0,0,.2)}
 .fullscreen-link::before{content:'↗';font-size:14px}
 
@@ -163,10 +164,9 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       <h3 class="section">Main Logo — “A Grief Like Mine — 1×1 Center”</h3>
       <div class="stage" id="logoStage">
         <img id="brandLogoIMG"
-             src="https://i.ibb.co/N2Lr6c4s/A-Grief-Like-Mine-1x1-center.png"
-             alt="A Grief Like Mine — 1×1 Center"
-             style="max-width:72%;height:auto" />
-        <a id="logoStageLink" class="fullscreen-link" href="https://i.ibb.co/N2Lr6c4s/A-Grief-Like-Mine-1x1-center.png" target="_blank" aria-label="Open full image"></a>
+             src="https://i.ibb.co/N2Lr6c4s/A-Grief-Like-Mine-1x1-center.png"p
+             alt="A Grief Like Mine — 1×1 Center" />
+        <a id="logoStageLink" class="fullscreen-link" href="https://i.ibb.co/N2Lr6c4s/A-Grief-Like-Mine-1x1-center.png" aria-label="Open full image"></a>
       </div>
       <div class="actions">
         <label class="drop" for="logoUpload">Upload logo (SVG / PNG / AI / PDF)</label>
@@ -189,21 +189,22 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       </ul>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px">
         <div class="stage" style="aspect-ratio:1/1; background:#fff" id="logoLight">
-          <img id="logoLightIMG" src="https://i.ibb.co/mCGyLQ0D/A-Grief-Like-Mine-1x1-center-transparent.png" alt="Logo on light" style="max-width:72%;height:auto"/>
-          <a id="logoLightLink" class="fullscreen-link" href="https://i.ibb.co/mCGyLQ0D/A-Grief-Like-Mine-1x1-center-transparent.png" target="_blank" aria-label="Open full image"></a>
+          <img id="logoLightIMG" src="https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png" alt="Logo on light"/>
+          <a id="logoLightLink" class="fullscreen-link" href="https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png" aria-label="Open full image"></a>
         </div>
         <div class="stage" style="aspect-ratio:1/1; background:#111" id="logoDark">
-          <img id="logoDarkIMG" src="https://i.ibb.co/mCGyLQ0D/A-Grief-Like-Mine-1x1-center-transparent.png" alt="Logo on dark" style="max-width:72%;height:auto"/>
+          <img id="logoDarkIMG" src="https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png" alt="Logo on dark"/>
+          <a id="logoDarkLink" class="fullscreen-link" href="https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png" aria-label="Open full image"></a>
           <a id="logoDarkLink" class="fullscreen-link" href="https://i.ibb.co/mCGyLQ0D/A-Grief-Like-Mine-1x1-center-transparent.png" target="_blank" aria-label="Open full image"></a>
         </div>
       </div>
     </div>
 
     <div class="card" style="grid-column: span 12; margin-top:20px;">
-      <h3 class="section">Alternative Logo — Symbols 3D</h3>
+      <h3 class="section">Alternative Logo — Illustration 3D</h3>
       <div class="stage" id="altLogoStage">
-        <img id="altLogoIMG" src="https://i.ibb.co/chVL645z/AGLM-Symbols-3-D-logo-large.png" alt="AGLM Symbols 3D logo" style="max-width:72%;height:auto"/>
-        <a id="altLogoLink" class="fullscreen-link" href="https://i.ibb.co/chVL645z/AGLM-Symbols-3-D-logo-large.png" target="_blank" aria-label="Open full image"></a>
+        <img id="altLogoIMG" src="https://i.ibb.co/gLsRFMTd/AGLM-Illustration-3-D-logo-large.png" alt="AGLM Illustration 3D logo"/>
+        <a id="altLogoLink" class="fullscreen-link" href="https://i.ibb.co/gLsRFMTd/AGLM-Illustration-3-D-logo-large.png" aria-label="Open full image"></a>
       </div>
     </div>
   </section>
@@ -356,7 +357,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     let img = target.querySelector('img');
     if(!img){
       img = document.createElement('img');
-      img.style.maxWidth='72%'; img.style.height='auto';
+      img.style.width='80%'; img.style.height='auto';
       target.appendChild(img);
     }
     img.src = dataURL;
@@ -364,7 +365,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     if(!link){
       link = document.createElement('a');
       link.className='fullscreen-link';
-      link.target='_blank';
+      link.removeAttribute('target');
       link.setAttribute('aria-label','Open full image');
       target.appendChild(link);
     }
@@ -391,7 +392,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       else{
         const holder = document.createElement('img');
         holder.id = 'brandLogoIMG'; holder.alt = 'Uploaded logo';
-        holder.src = url; holder.style.maxWidth='72%'; holder.style.height='auto';
+        holder.src = url; holder.style.width='80%'; holder.style.height='auto';
         stage.appendChild(holder);
       }
       if(mainLink) mainLink.href = url;
@@ -418,7 +419,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     const nodeImg = stage.querySelector('#brandLogoIMG');
 
     function drawAndSave(img){
-      const scale = 0.72; // match visual scale
+      const scale = 0.8; // match visual scale
       const s = size * scale;
       const x = (size - s)/2; const y = (size - s)/2;
       ctx.drawImage(img, x, y, s, s);
