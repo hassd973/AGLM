@@ -118,8 +118,8 @@ button.secondary{ background:#fff; color:var(--ink); border:1px solid color-mix(
 /* Fullscreen color modal */
 .color-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.8);z-index:1000}
 .color-modal .close-modal{position:absolute;top:20px;right:20px;background:none;border:0;color:#fff;font-size:32px;cursor:pointer}
-.color-modal .modal-logos{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
-.color-modal .modal-logos img{max-width:30%;height:auto}
+.color-modal .usage-logo{max-width:40%;height:auto}
+.color-modal .toggle-logo{position:absolute;bottom:20px;left:20px;background:rgba(0,0,0,.4);color:#fff;border:0;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:14px}
 
 /* Typography examples */
 .type-row{ display:grid; grid-template-columns:1fr; gap:8px }
@@ -335,11 +335,8 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 
 <div id="colorModal" class="color-modal" aria-hidden="true">
   <button class="close-modal" aria-label="Close">&times;</button>
-  <div class="modal-logos">
-    <img src="assets/logo-top-1.svg" alt="Logo variant 1">
-    <img src="assets/logo-top-2.svg" alt="Logo variant 2">
-    <img src="assets/logo-top-3.svg" alt="Logo variant 3">
-  </div>
+  <button class="toggle-logo" aria-label="Toggle logo">Logo</button>
+  <img id="usageLogo" class="usage-logo" alt="Usage logo" src="https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png">
 </div>
 
 <script>
@@ -347,6 +344,30 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 (function(){
   const modal=document.getElementById('colorModal');
   const close=modal.querySelector('.close-modal');
+  const toggle=modal.querySelector('.toggle-logo');
+  const logo=modal.querySelector('#usageLogo');
+  const logos=[
+    'https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png',
+    'https://i.ibb.co/rGKS5vTC/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered.png',
+    null
+  ];
+  let logoIndex=0;
+  function updateLogo(){
+    const src=logos[logoIndex];
+    if(src){
+      logo.src=src;
+      logo.style.display='block';
+    }else{
+      logo.style.display='none';
+    }
+  }
+  updateLogo();
+
+  toggle.addEventListener('click',()=>{
+    logoIndex=(logoIndex+1)%logos.length;
+    updateLogo();
+  });
+
   document.querySelectorAll('.swatch').forEach(sw=>{
     sw.addEventListener('click',()=>{
       const color=getComputedStyle(sw.querySelector('.chip')).backgroundColor;
@@ -354,7 +375,11 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       modal.style.display='flex';
     });
   });
-  function hide(){modal.style.display='none';}
+  function hide(){
+    modal.style.display='none';
+    logoIndex=0;
+    updateLogo();
+  }
   close.addEventListener('click',hide);
   modal.addEventListener('click',e=>{if(e.target===modal)hide();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});
