@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "serve frontend",
+    "start": "serve -s frontend -l $PORT",
     "build": "echo 'Static site - no build step'"
   },
   "devDependencies": {

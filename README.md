@@ -4,19 +4,19 @@ This repository hosts a static site used to share logo options and brand colors 
 
 ## Local development
 
-Open `index.html` to view the full interactive brand kit.
+Open `frontend/index.html` to view the full interactive brand kit.
 Open `brand-guide.html` for a concise logo/color overview suitable for client review.
 
 ## Deploying on Render
 
 1. Push this repository to GitHub.
-2. Sign in to [Render](https://render.com) and create a **Static Site**.
-3. Connect the site to your GitHub repo and select the `main` branch.
-4. Leave **Build Command** empty.
-5. Set **Publish Directory** to `.` (the repository root).
-6. Click **Create Static Site**.
+2. Sign in to [Render](https://render.com) and create a **Web Service** using the Node environment.
+3. Connect the service to your GitHub repo and select the `main` branch.
+4. Set **Build Command** to `npm install`.
+5. Set **Start Command** to `npm start`.
+6. Click **Create Web Service**.
 
-Render will build and serve the site at your chosen domain. Subsequent pushes to `main` trigger automatic redeploys.
+Render will install dependencies, run the start command, and serve the site from the `frontend/` directory. Subsequent pushes to `main` trigger automatic redeploys.
 
 ## Assets
 
