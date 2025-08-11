@@ -156,11 +156,16 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     <p>This page previews the <strong>2025</strong> brand system. For now, motion is kept <em>light</em>: the bird and butterfly float idly while we prepare more complex kinetic typography. Export a high‑res transparent PNG of the main logo anytime.</p>
   </section>
 
+  <section id="kinetic" class="card" style="margin-top:22px">
+    <h3 class="section">Kinetic Typography</h3>
+    <iframe src="kinetic-typography.html" title="Kinetic Typography" style="width:100%; aspect-ratio:16/9; border:0"></iframe>
+  </section>
+
   <section id="logo" class="grid" style="margin-top:22px">
     <div class="card" style="grid-column: span 7;">
       <h3 class="section">Main Logo — “A Grief Like Mine — 1×1 Center”</h3>
       <div class="stage" id="logoStage">
-        <img id="brandLogo" src="../assets/logo-top-1.svg" alt="A Grief Like Mine logo" style="width:72%;height:auto"/>
+        <img id="brandLogo" src="../assets/logo-alt-bg.svg" alt="A Grief Like Mine logo" style="width:72%;height:auto"/>
         <div class="overlay-note">Centered 1×1 composition</div>
       </div>
       <div class="actions">
@@ -181,16 +186,36 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
         <li>Maintain contrast ratio ≥ 4.5:1 when placing over photos.</li>
       </ul>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px">
-        <div class="stage" style="aspect-ratio:1/1; background:#fff">
-          <img src="../assets/logo-top-1.svg" alt="Logo on light" style="width:72%;height:auto"/>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px">
+          <div class="stage" style="aspect-ratio:1/1; background:#fff">
+            <img src="../assets/logo-top-1.svg" alt="Logo on light" style="width:72%;height:auto"/>
+          </div>
+          <a class="btn" href="../assets/logo-top-1.svg" download>Download SVG</a>
         </div>
-        <div class="stage" style="aspect-ratio:1/1; background:#111">
-          <img src="../assets/logo-top-1.svg" alt="Logo on dark" class="invert" style="width:72%;height:auto"/>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px">
+          <div class="stage" style="aspect-ratio:1/1; background:#111">
+            <img src="../assets/logo-top-1.svg" alt="Logo on dark" class="invert" style="width:72%;height:auto"/>
+          </div>
+          <button onclick="downloadPNG('../assets/logo-top-1.svg','logo-top-1.png')">PNG</button>
         </div>
       </div>
-      <div class="actions" style="margin-top:10px">
-        <a class="btn" href="../assets/logo-top-1.svg" download>Download SVG</a>
-        <button onclick="downloadPNG('../assets/logo-top-1.svg','logo-top-1.png')">PNG</button>
+    </div>
+
+    <div class="card" style="grid-column: span 12;">
+      <h3 class="section">Top 3 Logo</h3>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px">
+          <div class="stage" style="aspect-ratio:1/1; background:#fff">
+            <img src="../assets/logo-top-3.svg" alt="Top 3 logo on light" style="width:72%;height:auto"/>
+          </div>
+          <a class="btn" href="../assets/logo-top-3.svg" download>Download SVG</a>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px">
+          <div class="stage" style="aspect-ratio:1/1; background:#111">
+            <img src="../assets/logo-top-3.svg" alt="Top 3 logo on dark" class="invert" style="width:72%;height:auto"/>
+          </div>
+          <button onclick="downloadPNG('../assets/logo-top-3.svg','logo-top-3.png')">PNG</button>
+        </div>
       </div>
     </div>
   </section>
