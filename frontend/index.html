@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>A Grief Like Mine - Logos</title>
+  <style>
+    body{font-family:Arial, sans-serif;margin:2rem;background:#f5f5f5;color:#222;}
+    h1{font-size:1.5rem;}
+    .logo{margin-bottom:2rem;}
+    img{max-width:200px;height:auto;display:block;margin-bottom:0.5rem;}
+    .actions a, .actions button{margin-right:0.5rem;padding:0.3rem 0.6rem;border-radius:4px;border:1px solid #ccc;background:#fff;cursor:pointer;text-decoration:none;color:#222;font-size:0.9rem;}
+    .actions button{background:#2c6fb1;color:#fff;border-color:#2c6fb1;}
+    .actions button:hover{background:#1d3f73;}
+  </style>
+</head>
+<body>
+  <h1>A Grief Like Mine Logos</h1>
+  <div class="logo">
+    <img src="../assets/logo-top-1.svg" alt="Logo top 1" />
+    <div class="actions">
+      <a href="../assets/logo-top-1.svg" download>Download SVG</a>
+      <button onclick="downloadPNG('../assets/logo-top-1.svg','logo-top-1.png')">Download PNG</button>
+    </div>
+  </div>
+  <div class="logo">
+    <img src="../assets/logo-top-2.svg" alt="Logo top 2" />
+    <div class="actions">
+      <a href="../assets/logo-top-2.svg" download>Download SVG</a>
+      <button onclick="downloadPNG('../assets/logo-top-2.svg','logo-top-2.png')">Download PNG</button>
+    </div>
+  </div>
+  <div class="logo">
+    <img src="../assets/logo-top-3.svg" alt="Logo top 3" />
+    <div class="actions">
+      <a href="../assets/logo-top-3.svg" download>Download SVG</a>
+      <button onclick="downloadPNG('../assets/logo-top-3.svg','logo-top-3.png')">Download PNG</button>
+    </div>
+  </div>
+  <div class="logo">
+    <img src="../assets/logo-alt-bg.svg" alt="Logo alt bg" />
+    <div class="actions">
+      <a href="../assets/logo-alt-bg.svg" download>Download SVG</a>
+      <button onclick="downloadPNG('../assets/logo-alt-bg.svg','logo-alt-bg.png')">Download PNG</button>
+    </div>
+  </div>
+  <div class="logo">
+    <img src="../assets/logo-alt-kinetic.svg" alt="Logo alt kinetic" />
+    <div class="actions">
+      <a href="../assets/logo-alt-kinetic.svg" download>Download SVG</a>
+      <button onclick="downloadPNG('../assets/logo-alt-kinetic.svg','logo-alt-kinetic.png')">Download PNG</button>
+    </div>
+  </div>
+  <script>
+    async function downloadPNG(src, filename){
+      try{
+        const svgText = await fetch(src).then(r=>r.text());
+        const svgBlob = new Blob([svgText], {type:'image/svg+xml;charset=utf-8'});
+        const url = URL.createObjectURL(svgBlob);
+        const img = new Image();
+        img.onload = function(){
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width; canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img,0,0);
+          URL.revokeObjectURL(url);
+          canvas.toBlob(function(blob){
+            const a=document.createElement('a');
+            a.href=URL.createObjectURL(blob);
+            a.download=filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          },'image/png');
+        };
+        img.src = url;
+      }catch(err){
+        console.error('PNG download failed', err);
+      }
+    }
+  </script>
+</body>
+</html>
