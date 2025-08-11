@@ -1,0 +1,12 @@
+{
+  "name": "aglm-site",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "serve frontend",
+    "build": "echo 'Static site - no build step'"
+  },
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Kinetic Typography Module</title>
+<style>
+  :root{ --bg:#f7f6f3; --ink:#111; --blue1:#2c6fb1; --blue2:#6fb1ff; --blue3:#1d3f73; }
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);display:grid;place-items:center;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  .wrap{position:relative; width:min(1100px,92vw);} 
+  .logo-svg{width:100%; height:auto; display:block;}
+  /* flying sprites */
+  .particles{position:absolute; inset:0; pointer-events:none}
+  .sprite{position:absolute; width:clamp(18px,2.0vw,28px); opacity:0; transform-origin:50% 70%;
+           filter:drop-shadow(0 1px 0 rgba(0,0,0,.12));}
+  .sprite svg{display:block; width:100%; height:auto}
+  .sprite .wing{ animation: flap var(--flap,460ms) ease-in-out infinite }
+  @keyframes flap{ 0%,100%{transform:rotate(0)} 50%{transform:rotate(var(--arc,18deg))} }
+  .sprite.fly{ animation: flight var(--dur,2800ms) cubic-bezier(.2,.6,.1,1) forwards; }
+  @keyframes flight{
+    0%  {opacity:0; transform:translate(var(--x,0),var(--y,0)) rotate(var(--r0,0deg)) scale(var(--s,1))}
+    8%  {opacity:1}
+    45% {transform:translate(calc(var(--x) + var(--mx,60px)), calc(var(--y) + var(--my,-120px))) rotate(var(--rm,-8deg)) scale(calc(var(--s,1)*.98))}
+    100%{opacity:0; transform:translate(calc(var(--x) + var(--dx,180px)), calc(var(--y) + var(--dy,-260px))) rotate(var(--r1,-18deg)) scale(calc(var(--s,1)*.88))}
+  }
+  @media (prefers-reduced-motion: reduce){ .sprite,.wing{animation:none!important} }
+  /* hover effects */
+  #Bird, #Butterfly{transition:transform .3s;}
+  #Bird:hover, #Butterfly:hover{transform:translateY(-8px);}
+  #logoHolder svg path,
+  #logoHolder svg polygon,
+  #logoHolder svg rect{transition:transform .2s;}
+  #logoHolder svg path:hover,
+  #logoHolder svg polygon:hover,
+  #logoHolder svg rect:hover{transform:translateY(-3px);}
+</style>
+</head>
+<body>
+  <svg width="0" height="0" aria-hidden="true" focusable="false">
+    <symbol id="BIRD_RIG" viewBox="0 0 100 80">
+      <path fill="var(--blue1)" d="M53,44c8,0,17-8,17-16c0-9-9-16-20-16c-10,0-18,6-21,13c-8,2-15,9-15,16c0,7,6,12,15,12c9,0,17-4,24-9z"/>
+      <path fill="var(--blue3)" d="M35,45l-18,16l10-3l-7,12l17-17z"/>
+      <path fill="var(--blue2)" d="M70,26l14-4l-10,10z"/>
+      <circle cx="61" cy="23" r="2.1" fill="#0b1d36"/>
+      <g class="wing" style="transform-origin:40px 33px; --arc:16deg">
+        <path fill="var(--blue2)" d="M18,20c8,3,18,8,24,14c-8,0-17-1-26-3c-6-2-6-9,2-11z"/>
+      </g>
+      <g class="wing" style="transform-origin:62px 38px; --arc:16deg">
+        <path fill="var(--blue2)" d="M42,30c10,2,21,7,28,13c-8,1-17,0-27-2c-6-2-6-9-1-11z"/>
+      </g>
+      <path d="M48,48 l-5,12 M55,46 l-2,10" stroke="var(--blue3)" stroke-width="1.4" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="BUTTER_RIG" viewBox="0 0 100 80">
+      <rect x="48" y="30" width="4" height="22" rx="2" fill="var(--blue3)"/>
+      <circle cx="50" cy="28" r="5" fill="var(--blue3)"/>
+      <g class="wing" style="transform-origin:52px 40px; --arc:22deg">
+        <path fill="var(--blue1)" d="M50,40 C25,15 10,35 15,47 C20,60 35,58 48,46 Z"/>
+        <circle cx="37" cy="45" r="4" fill="var(--blue2)"/>
+        <circle cx="30" cy="38" r="3" fill="var(--blue2)"/>
+      </g>
+      <g class="wing" style="transform-origin:48px 40px; --arc:-22deg">
+        <path fill="var(--blue1)" d="M50,40 C75,15 90,35 85,47 C80,60 65,58 52,46 Z"/>
+        <circle cx="63" cy="45" r="4" fill="var(--blue2)"/>
+        <circle cx="70" cy="38" r="3" fill="var(--blue2)"/>
+      </g>
+      <path d="M48,28 c-6,-12 -14,-12 -18,-8 M52,28 c6,-12 14,-12 18,-8" stroke="var(--blue3)" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+    </symbol>
+  </svg>
+
+  <div class="wrap" id="wrap">
+    <div id="logoHolder"></div>
+    <div class="particles" id="particles"></div>
+  </div>
+
+<script>
+(function(){
+  const logoHolder = document.getElementById('logoHolder');
+  const particles = document.getElementById('particles');
+
+  fetch('../assets/logo-alt-kinetic.svg')
+    .then(r=>r.text())
+    .then(svgText=>{
+      logoHolder.innerHTML = svgText;
+      init();
+    });
+
+  const R = (a,b)=> a + Math.random()*(b-a);
+
+  function spawn(kind, x, y, drift){
+    const el = document.createElement('div');
+    el.className = 'sprite ' + kind;
+    const sv = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    sv.setAttribute('viewBox','0 0 100 80');
+    const use = document.createElementNS('http://www.w3.org/2000/svg','use');
+    use.setAttributeNS('http://www.w3.org/1999/xlink','href', kind==='bird' ? '#BIRD_RIG' : '#BUTTER_RIG');
+    sv.appendChild(use); el.appendChild(sv); particles.appendChild(el);
+    const host = particles.getBoundingClientRect();
+    const px = x - host.left, py = y - host.top;
+    el.style.setProperty('--x', px+'px'); el.style.setProperty('--y', py+'px');
+    let dx = R(160,240), dy = R(-320,-200);
+    if(drift==='left') dx = -dx;
+    const mx = dx*0.45, my = dy*0.45;
+    el.style.setProperty('--mx', Math.round(mx)+'px');
+    el.style.setProperty('--my', Math.round(my)+'px');
+    el.style.setProperty('--dx', Math.round(dx)+'px');
+    el.style.setProperty('--dy', Math.round(dy)+'px');
+    el.style.setProperty('--r0', R(-10,10)+'deg');
+    el.style.setProperty('--rm', R(-10,10)+'deg');
+    el.style.setProperty('--r1', R(-28,18)+'deg');
+    el.style.setProperty('--s', R(.95,1.15));
+    el.style.setProperty('--flap', (kind==='bird'? R(380,480):R(320,420))+'ms');
+    el.style.setProperty('--dur', Math.round(R(2400,3200))+'ms');
+    requestAnimationFrame(()=> el.classList.add('fly'));
+    el.addEventListener('animationend', ()=> el.remove(), {once:true});
+  }
+
+  function centerOf(el){ const r = el.getBoundingClientRect(); return {x:r.left+r.width*0.5, y:r.top+r.height*0.5}; }
+
+  function init(){
+    const svgRoot = logoHolder.querySelector('svg');
+    const bird = svgRoot ? svgRoot.querySelector('#Bird, #bird') : null;
+    const butter = svgRoot ? svgRoot.querySelector('#Butterfly, #butterfly') : null;
+    if (bird) {
+      bird.style.cursor = 'pointer';
+      bird.addEventListener('mouseenter', ()=>{
+        const a = centerOf(bird);
+        spawn('bird', a.x, a.y, 'right');
+      });
+    }
+    if (butter) {
+      butter.style.cursor = 'pointer';
+      butter.addEventListener('mouseenter', ()=>{
+        const a = centerOf(butter);
+        spawn('butter', a.x, a.y, 'left');
+      });
+    }
+    svgRoot.addEventListener('click', (ev)=>{
+      const n = Math.round(R(24, 36));
+      for(let i=0;i<n;i++) setTimeout(()=> spawn(Math.random()<.55?'bird':'butter', ev.clientX, ev.clientY, Math.random()<.5?'left':'right'), i*32);
+    });
+  }
+})();
+</script>
+</body>
+</html>
