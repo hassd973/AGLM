@@ -5,40 +5,43 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>A GRIEF LIKE MINE — Brand Kit (2025)</title>
 
-<!-- Brand fonts (as provided) -->
+<!-- Fonts: Modak + Sora sitewide. Sixtyfour is loaded but used ONLY for color names in the swatches. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=Faculty+Glyphic&family=Inconsolata:wdth,wght@112.5,200..900&family=Limelight&family=Modak&family=Quicksand:wght@300..700&family=Righteous&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Modak&family=Sora:wght@300..800&family=Sixtyfour&display=swap" rel="stylesheet">
 
 <style>
 :root{
-  /* Core palette */
-  --bg:#f7f6f3;
-  --ink:#111111;
-  --blue1:#2c6fb1;
-  --blue2:#6fb1ff;
-  --blue3:#1d3f73;
-  /* Extended from the mark */
-  --blueA:#294b81;
+  /* ORIGINAL BRAND PALETTE (restored exactly) */
+  --bg:#f7f6f3;          /* porcelain paper */
+  --ink:#111111;         /* near-black */
+  --blue1:#2c6fb1;       /* primary blue */
+  --blue2:#6fb1ff;       /* sky */
+  --blue3:#1d3f73;       /* deep blue */
+  --blueA:#294b81;       /* extended */
   --blueB:#6b89bd;
   --blueC:#335694;
-  --neutral1:#efe5d7;
-  --neutral2:#ebe9d5;
-  --neutral3:#f3f0ec;
-  --rose:#dbb5c2;
+  --neutral1:#efe5d7;    /* oat */
+  --neutral2:#ebe9d5;    /* bone */
+  --neutral3:#f3f0ec;    /* porcelain */
+  --rose:#dbb5c2;        /* accent */
 
   /* UI */
   --card:#ffffff;
   --muted:#4f5560;
   --shadow: 0 10px 30px rgba(0,0,0,.08);
+
+  /* Derived tokens for components */
+  --primary: var(--blue1);
+  --primaryHover: color-mix(in srgb, var(--blue1) 80%, var(--blue2));
 }
 
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0; background:var(--bg); color:var(--ink);
-  font-family: Quicksand, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-  line-height:1.4;
+  font-family:'Sora', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  line-height:1.45;
 }
 img{max-width:100%;height:auto}
 
@@ -49,29 +52,28 @@ img{max-width:100%;height:auto}
   backdrop-filter: blur(6px);
   z-index:5;
 }
-.brand{
-  display:flex; align-items:center; gap:14px;
-}
+.brand{ display:flex; align-items:center; gap:14px; }
 .brand .dot{
   width:14px; height:14px; border-radius:50%; background:var(--blue1);
   box-shadow:0 0 0 6px color-mix(in srgb, var(--blue1) 12%, transparent);
 }
-.brand h1{font-family:Righteous, sans-serif; font-size:clamp(16px,4.5vw,18px); margin:0; letter-spacing:.08em}
+/* Title readability (no condensation) */
+.brand h1{ font-family:'Sora', sans-serif; font-weight:700; font-size:22px; margin:0; letter-spacing:.01em; line-height:1.2 }
+
 .header nav{display:flex; gap:14px; flex-wrap:wrap}
-.header a{
-  text-decoration:none; color:var(--ink); font-size:clamp(13px,4vw,14px); opacity:.85; padding:6px 10px; border-radius:8px;
-}
-.header a:hover{ background:color-mix(in srgb, var(--blue2) 15%, transparent); }
+.header a{ text-decoration:none; color:var(--ink); font-size:14px; opacity:.85; padding:6px 10px; border-radius:8px; }
+.header a:hover{ background:color-mix(in srgb, var(--blue2) 18%, transparent); }
 
 .grid{display:grid; grid-template-columns:repeat(12,1fr); gap:20px}
-.card{
-  background:var(--card);
-  border-radius:18px; padding:18px; box-shadow:var(--shadow);
+@media(max-width:700px){
+  .grid{grid-template-columns:1fr}
+  .grid .card{grid-column:span 12 !important}
 }
+.card{ background:var(--card); border-radius:18px; padding:18px; box-shadow:var(--shadow); }
 
 /* Hero */
 .hero{ position:relative; border-radius:22px; padding:28px; overflow:hidden; background:var(--card); box-shadow:var(--shadow) }
-.hero h2{ font-family: Faculty Glyphic, serif; margin:0 0 10px; font-size:clamp(22px,6vw,26px); letter-spacing:.02em }
+.hero h2{ font-family:'Modak', cursive; margin:0 0 10px; font-size:28px; letter-spacing:.01em }
 .hero p{ margin:0; color:var(--muted) }
 
 /* Floating sprites — idle only */
@@ -79,45 +81,32 @@ img{max-width:100%;height:auto}
 .sprite{ position:absolute; width:clamp(24px,2.6vw,34px); transform-origin:50% 60%;
          opacity:.95; filter:drop-shadow(0 2px 2px rgba(0,0,0,.12)); animation:floatY var(--dur,6s) ease-in-out infinite }
 .sprite svg{ display:block; width:100%; height:auto }
-.invert{ filter:brightness(0) invert(1); }
 .sprite .wing{ animation:flap var(--flap,1200ms) ease-in-out infinite; }
 @keyframes flap{ 0%,100%{ transform:rotate(0) } 50%{ transform:rotate(var(--arc,14deg)) } }
 @keyframes floatY{ 0%,100%{ transform:translateY(-6px) rotate(var(--start,0deg)) } 50%{ transform:translateY(6px) rotate(var(--end,-2deg)) } }
 
 /* Logo stage */
-.stage{
-  position:relative; display:grid; place-items:center; aspect-ratio:1/1; background:var(--neutral3);
-  border-radius:20px; overflow:hidden;
-}
-.stage .overlay-note{
-  position:absolute; bottom:10px; right:10px; font-size:12px; padding:6px 10px; border-radius:10px;
-  color:#333;
-  background:rgba(255,255,255,.4);
-  backdrop-filter:blur(8px);
-  border:1px solid rgba(255,255,255,.3);
-  box-shadow:0 6px 20px rgba(0,0,0,.08);
-}
+.stage{ position:relative; display:grid; place-items:center; aspect-ratio:1/1; background:var(--neutral3); border-radius:20px; overflow:hidden; }
+.stage .overlay-note{ position:absolute; bottom:10px; right:10px; font-size:12px; background:rgba(255,255,255,.8); padding:6px 10px; border-radius:10px; color:#333; box-shadow:0 6px 20px rgba(0,0,0,.08); }
+.fullscreen-link{position:absolute;top:10px;right:10px;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;text-decoration:none;color:#333;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.fullscreen-link::before{content:'↗';font-size:14px}
 
 .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px }
 button, .btn{
-  appearance:none; border:0; border-radius:12px; padding:10px 14px; font-weight:600; cursor:pointer; background:var(--blue1); color:white;
+  appearance:none; border:0; border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer; background:var(--primary); color:white;
   box-shadow:0 6px 16px rgba(44,111,177,.25);
 }
+button:hover{ background:var(--primaryHover) }
 button.secondary{ background:#fff; color:var(--ink); border:1px solid color-mix(in srgb, var(--ink) 12%, transparent) }
 .btn:focus, button:focus{ outline:2px solid color-mix(in srgb, var(--blue2) 40%, transparent) }
 
 /* Color swatches */
 .swatches{ display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:14px }
-.swatch{ border-radius:14px; padding:14px; background:#fff; box-shadow:var(--shadow); cursor:pointer; }
+.swatch{ border-radius:14px; padding:14px; background:#fff; box-shadow:var(--shadow); }
 .swatch .chip{ height:56px; border-radius:12px; margin-bottom:10px }
-.swatch code{ font-family: Inconsolata, monospace; font-size:13px; color:#333; }
-.swatch h4{ margin:2px 0 6px; font-family: Doto, sans-serif; font-weight:700; font-variation-settings:"wght" 700; }
-
-/* Fullscreen color modal */
-.color-modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:999;}
-.color-modal.active{display:flex;}
-.color-modal .preview{width:90vw;height:90vh;border-radius:16px;position:relative;}
-.color-modal .code{position:absolute;bottom:16px;right:16px;background:rgba(255,255,255,.85);padding:8px 12px;border-radius:8px;font-family:Inconsolata,monospace;}
+.swatch code{ font-family:'Sora', sans-serif; font-size:13px; color:#333; }
+/* Sixtyfour ONLY here for color titles */
+.swatch h4{ margin:2px 0 6px; font-family:'Sixtyfour', sans-serif; font-weight:400; letter-spacing:.02em; font-variation-settings:"BLED" 0, "SCAN" 0 }
 
 /* Typography examples */
 .type-row{ display:grid; grid-template-columns:1fr; gap:8px }
@@ -132,22 +121,17 @@ button.secondary{ background:#fff; color:var(--ink); border:1px solid color-mix(
 .canvas.square{ aspect-ratio:1/1 }
 .canvas.portrait{ aspect-ratio:4/5 }
 .canvas.landscape{ aspect-ratio:16/9 }
-
-@media (max-width:600px){
-  .grid{grid-template-columns:1fr;}
-  .header{flex-direction:column; align-items:flex-start;}
-  .header nav{flex-direction:column; width:100%;}
-  .header nav a{display:block;}
-}
+.canvas .ghost{ opacity:.22; font-family:'Modak', cursive; letter-spacing:.04em }
 
 /* Section headings */
-h3.section{ font-family: Faculty Glyphic, serif; margin:28px 0 12px; font-size:clamp(20px,5vw,22px); letter-spacing:.02em }
+h3.section{ font-family:'Sora', sans-serif; font-weight:700; margin:28px 0 12px; font-size:22px; letter-spacing:.01em }
 
 footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 
 /* Small helpers */
-.mono{ font-family: Inconsolata, monospace }
+.mono{ font-family:'Sora', sans-serif }
 .nowrap{ white-space:nowrap }
+.drop{ display:inline-block; padding:8px 10px; border:1px dashed color-mix(in srgb, var(--ink) 25%, transparent); border-radius:10px; font-size:12px; color:#555 }
 </style>
 </head>
 <body>
@@ -164,25 +148,30 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       <a href="#type">Typography</a>
       <a href="#templates">Social Templates</a>
       <a href="#photos">Photo Direction</a>
-      <a href="#downloads">Downloads</a>
+      <a href="#exports">Exports</a>
     </nav>
   </header>
 
   <section id="overview" class="hero card">
     <div class="particles" id="particles"></div>
     <h2>Overview</h2>
-    <p>This page previews the <strong>2025</strong> brand system. For now, motion is kept <em>light</em>: the bird and butterfly float idly while we prepare more complex kinetic typography. Export a high‑res transparent PNG of the main logo anytime.</p>
+    <p>This page previews the <strong>2025</strong> brand system using only <strong>Modak</strong> and <strong>Sora</strong>. Brand colors are restored to the original blues + neutrals. The <span class="mono">Sixtyfour</span> font is used <em>only</em> for swatch titles in the Colors section.</p>
   </section>
 
   <section id="logo" class="grid" style="margin-top:22px">
     <div class="card" style="grid-column: span 7;">
       <h3 class="section">Main Logo — “A Grief Like Mine — 1×1 Center”</h3>
       <div class="stage" id="logoStage">
-        <img id="brandLogo" src="../assets/A-Grief-Like-Mine-1x1-center-[transparent].png" alt="A Grief Like Mine centered logo" style="width:72%;height:auto"/>
-        <div class="overlay-note">Centered 1×1 composition</div>
+        <img id="brandLogoIMG"
+             src="https://i.ibb.co/N2Lr6c4s/A-Grief-Like-Mine-1x1-center.png"
+             alt="A Grief Like Mine — 1×1 Center"
+             style="max-width:72%;height:auto" />
+        <a id="logoStageLink" class="fullscreen-link" href="https://i.ibb.co/N2Lr6c4s/A-Grief-Like-Mine-1x1-center.png" target="_blank" aria-label="Open full image"></a>
       </div>
       <div class="actions">
-        <a class="btn" href="../assets/A-Grief-Like-Mine-1x1-center-[transparent].png" download>Download PNG (transparent, 3000×3000)</a>
+        <label class="drop" for="logoUpload">Upload logo (SVG / PNG / AI / PDF)</label>
+        <input id="logoUpload" type="file" accept="image/svg+xml,image/png,.ai,application/pdf" style="position:absolute;opacity:0;pointer-events:none" aria-hidden="true" />
+        <button id="exportPNG">Download PNG (transparent, 3000×3000)</button>
         <button class="secondary" id="toggleBG">Toggle Preview BG</button>
       </div>
       <div style="margin-top:10px; color:#555; font-size:13px">
@@ -199,36 +188,22 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
         <li>Maintain contrast ratio ≥ 4.5:1 when placing over photos.</li>
       </ul>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px">
-        <div style="display:flex; flex-direction:column; align-items:center; gap:6px">
-          <div class="stage" style="aspect-ratio:1/1; background:#fff">
-            <img src="../assets/A-Grief-Like-Mine-1x1-center.png" alt="Logo on light" style="width:72%;height:auto"/>
-          </div>
-          <a class="btn" href="../assets/A-Grief-Like-Mine-1x1-center.png" download>Download PNG</a>
+        <div class="stage" style="aspect-ratio:1/1; background:#fff" id="logoLight">
+          <img id="logoLightIMG" src="https://i.ibb.co/mCGyLQ0D/A-Grief-Like-Mine-1x1-center-transparent.png" alt="Logo on light" style="max-width:72%;height:auto"/>
+          <a id="logoLightLink" class="fullscreen-link" href="https://i.ibb.co/mCGyLQ0D/A-Grief-Like-Mine-1x1-center-transparent.png" target="_blank" aria-label="Open full image"></a>
         </div>
-        <div style="display:flex; flex-direction:column; align-items:center; gap:6px">
-          <div class="stage" style="aspect-ratio:1/1; background:#111">
-            <img src="../assets/A-Grief-Like-Mine-1x1-center-[transparent].png" alt="Logo on dark" class="invert" style="width:72%;height:auto"/>
-          </div>
-          <a class="btn" href="../assets/A-Grief-Like-Mine-1x1-center-[transparent].png" download>Download PNG</a>
+        <div class="stage" style="aspect-ratio:1/1; background:#111" id="logoDark">
+          <img id="logoDarkIMG" src="https://i.ibb.co/mCGyLQ0D/A-Grief-Like-Mine-1x1-center-transparent.png" alt="Logo on dark" style="max-width:72%;height:auto"/>
+          <a id="logoDarkLink" class="fullscreen-link" href="https://i.ibb.co/mCGyLQ0D/A-Grief-Like-Mine-1x1-center-transparent.png" target="_blank" aria-label="Open full image"></a>
         </div>
       </div>
     </div>
 
-    <div class="card" style="grid-column: span 12;">
-      <h3 class="section">Top 3 Logo</h3>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px">
-        <div style="display:flex; flex-direction:column; align-items:center; gap:6px">
-          <div class="stage" style="aspect-ratio:1/1; background:#fff">
-            <img src="../assets/AGLM-Symbols_3D_logo.png" alt="Top 3 logo on light" style="width:72%;height:auto"/>
-          </div>
-          <a class="btn" href="../assets/AGLM-Symbols_3D_logo.png" download>Download PNG</a>
-        </div>
-        <div style="display:flex; flex-direction:column; align-items:center; gap:6px">
-          <div class="stage" style="aspect-ratio:1/1; background:#111">
-            <img src="../assets/AGLM-Symbols_3D_logo.png" alt="Top 3 logo on dark" class="invert" style="width:72%;height:auto"/>
-          </div>
-          <a class="btn" href="../assets/AGLM-Symbols_3D_logo.png" download>Download PNG</a>
-        </div>
+    <div class="card" style="grid-column: span 12; margin-top:20px;">
+      <h3 class="section">Alternative Logo — Symbols 3D</h3>
+      <div class="stage" id="altLogoStage">
+        <img id="altLogoIMG" src="https://i.ibb.co/chVL645z/AGLM-Symbols-3-D-logo-large.png" alt="AGLM Symbols 3D logo" style="max-width:72%;height:auto"/>
+        <a id="altLogoLink" class="fullscreen-link" href="https://i.ibb.co/chVL645z/AGLM-Symbols-3-D-logo-large.png" target="_blank" aria-label="Open full image"></a>
       </div>
     </div>
   </section>
@@ -239,66 +214,45 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       <div class="swatch"><div class="chip" style="background:var(--blue1)"></div><h4>Primary Blue</h4><code>#2C6FB1</code></div>
       <div class="swatch"><div class="chip" style="background:var(--blue2)"></div><h4>Sky</h4><code>#6FB1FF</code></div>
       <div class="swatch"><div class="chip" style="background:var(--blue3)"></div><h4>Deep Blue</h4><code>#1D3F73</code></div>
+      <div class="swatch"><div class="chip" style="background:var(--blueA)"></div><h4>Blue A</h4><code>#294B81</code></div>
+      <div class="swatch"><div class="chip" style="background:var(--blueB)"></div><h4>Blue B</h4><code>#6B89BD</code></div>
+      <div class="swatch"><div class="chip" style="background:var(--blueC)"></div><h4>Blue C</h4><code>#335694</code></div>
       <div class="swatch"><div class="chip" style="background:var(--ink)"></div><h4>Ink</h4><code>#111111</code></div>
       <div class="swatch"><div class="chip" style="background:var(--neutral3)"></div><h4>Porcelain</h4><code>#F3F0EC</code></div>
       <div class="swatch"><div class="chip" style="background:var(--neutral2)"></div><h4>Bone</h4><code>#EBE9D5</code></div>
       <div class="swatch"><div class="chip" style="background:var(--neutral1)"></div><h4>Oat</h4><code>#EFE5D7</code></div>
       <div class="swatch"><div class="chip" style="background:var(--rose)"></div><h4>Rose Accent</h4><code>#DBB5C2</code></div>
     </div>
-    <p style="margin-top:10px; color:#555; font-size:13px">Accessible tints/tones derive from these tokens in CSS. UI uses neutrals; hero and accents lean on blues.</p>
+    <p style="margin-top:10px; color:#555; font-size:13px">All UI and illustrations should reference these CSS tokens. Neutrals for surfaces; blues for hero/accents; rose sparingly.</p>
   </section>
 
   <section id="type" class="card" style="margin-top:22px">
     <h3 class="section">Typography</h3>
     <div class="type-row">
       <div class="sample">
-        <div class="cap">Display — Faculty Glyphic</div>
-        <div class="text" style="font-family:'Faculty Glyphic', serif;">A Grief Like Mine</div>
+        <div class="cap">Display — Modak</div>
+        <div class="text" style="font-family:'Modak', cursive;">A Grief Like Mine</div>
       </div>
       <div class="sample">
-        <div class="cap">Headline — Righteous</div>
-        <div class="text" style="font-family:'Righteous', sans-serif;">A Grief Like Mine</div>
-      </div>
-      <div class="sample">
-        <div class="cap">Body — Quicksand</div>
-        <div class="text" style="font-family:'Quicksand', sans-serif; font-weight:500;">The sea remembers. We move gently, not swiftly.</div>
-      </div>
-      <div class="sample">
-        <div class="cap">Mono — Inconsolata</div>
-        <div class="text" style="font-family:'Inconsolata', monospace;">AGLM — 2025</div>
+        <div class="cap">Body & UI — Sora</div>
+        <div class="text" style="font-family:'Sora', sans-serif; font-weight:500;">The sea remembers. We move gently, not swiftly.</div>
       </div>
     </div>
-
-    <details style="margin-top:10px">
-      <summary class="mono">Optional CSS for "Sixtyfour" variable example</summary>
-      <pre class="mono" style="white-space:pre-wrap; font-size:12px; background:#f8f8f8; padding:10px; border-radius:8px;">.sixtyfour-uniq {
-  font-family: "Sixtyfour", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-style: normal;
-  font-variation-settings: "BLED" 0, "SCAN" 0;
-}</pre>
-    </details>
-  </section>
-
-  <section id="kinetic" class="card" style="margin-top:22px">
-    <h3 class="section">Kinetic Typography</h3>
-    <iframe src="kinetic-typography.html" title="Kinetic Typography" style="width:100%; aspect-ratio:16/9; border:0"></iframe>
   </section>
 
   <section id="templates" class="card" style="margin-top:22px">
     <h3 class="section">Social Templates</h3>
     <div class="templates">
       <div class="frame">
-        <div class="canvas square"><img src="../assets/A-Grief-Like-Mine-1x1-center-[transparent].png" alt="1x1 template" style="width:80%;height:auto"/></div>
+        <div class="canvas square"><div class="ghost">1×1</div></div>
         <div style="font-size:12px; margin-top:6px; color:#555">Profile / Grid</div>
       </div>
       <div class="frame">
-        <div class="canvas portrait"><img src="../assets/AGLM-Illustration_3D_logo-large.png" alt="4x5 template" style="width:80%;height:auto"/></div>
+        <div class="canvas portrait"><div class="ghost">4×5</div></div>
         <div style="font-size:12px; margin-top:6px; color:#555">IG Portrait</div>
       </div>
       <div class="frame">
-        <div class="canvas landscape"><img src="../assets/AGLM-Symbols_3D_logo.png" alt="16x9 template" style="width:80%;height:auto"/></div>
+        <div class="canvas landscape"><div class="ghost">16×9</div></div>
         <div style="font-size:12px; margin-top:6px; color:#555">Video / YouTube</div>
       </div>
     </div>
@@ -314,43 +268,13 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     </ul>
   </section>
 
-  <section id="downloads" class="card" style="margin-top:22px">
-    <h3 class="section">Logo Downloads</h3>
-    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px">
-      <div class="card" style="box-shadow:none">
-        <img src="../assets/A-Grief-Like-Mine-1x1-center.png" alt="1x1 centered logo" style="width:100%;height:auto"/>
-        <div class="actions" style="margin-top:10px">
-          <a class="btn" href="../assets/A-Grief-Like-Mine-1x1-center.png" download>Download PNG</a>
-        </div>
-      </div>
-      <div class="card" style="box-shadow:none">
-        <img src="../assets/A-Grief-Like-Mine-1x1-center-[transparent].png" alt="1x1 centered logo transparent" style="width:100%;height:auto"/>
-        <div class="actions" style="margin-top:10px">
-          <a class="btn" href="../assets/A-Grief-Like-Mine-1x1-center-[transparent].png" download>Download PNG</a>
-        </div>
-      </div>
-      <div class="card" style="box-shadow:none">
-        <img src="../assets/AGLM-Symbols_3D_logo.png" alt="Symbols 3D logo" style="width:100%;height:auto"/>
-        <div class="actions" style="margin-top:10px">
-          <a class="btn" href="../assets/AGLM-Symbols_3D_logo.png" download>Download PNG</a>
-        </div>
-      </div>
-      <div class="card" style="box-shadow:none">
-        <img src="../assets/AGLM-Illustration_3D_logo-large.png" alt="Illustration 3D logo" style="width:100%;height:auto"/>
-        <div class="actions" style="margin-top:10px">
-          <a class="btn" href="../assets/AGLM-Illustration_3D_logo-large.png" download>Download PNG</a>
-        </div>
-      </div>
-    </div>
+  <section id="exports" class="card" style="margin-top:22px">
+    <h3 class="section">Exports</h3>
+    <p>Upload your approved logo (SVG or PNG) and click <strong>Download PNG</strong> to export a high‑res transparent PNG of the centered logo (3000×3000). If you only have an <strong>.ai</strong> file, export it to <em>SVG</em> or <em>PNG</em> first, then upload here.</p>
+    <div style="font-size:12px; color:#666">Note: Export uses client‑side canvas for transparency and crisp edges.</div>
   </section>
 
   <footer>© 2025 A GRIEF LIKE MINE — Brand system preview</footer>
-</div>
-
-<div id="colorModal" class="color-modal" role="dialog" aria-modal="true">
-  <div id="colorPreview" class="preview">
-    <span id="colorCode" class="code"></span>
-  </div>
 </div>
 
 <!-- Hidden symbol rigs for the idle-only bird & butterfly -->
@@ -411,44 +335,116 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     el.style.setProperty('--end', R(-4,2) + 'deg');
   }
 
+  // a couple floating friends
   spawn('bird'); spawn('butter');
   setTimeout(()=> spawn('butter'), 600);
 })();
 
-// Toggle preview background for centered logo
+// Logo upload & previews
 (function(){
+  const input = document.getElementById('logoUpload');
+  const stage = document.getElementById('logoStage');
+  const light = document.getElementById('logoLight');
+  const dark  = document.getElementById('logoDark');
+  const mainLink = document.getElementById('logoStageLink');
+
+  document.querySelector('label[for="logoUpload"]').addEventListener('click',()=> input.click());
+
+  function clear(node){ while(node && node.firstChild) node.removeChild(node.firstChild); }
+  function renderPreview(target, dataURL){
+    if(!target) return;
+    let img = target.querySelector('img');
+    if(!img){
+      img = document.createElement('img');
+      img.style.maxWidth='72%'; img.style.height='auto';
+      target.appendChild(img);
+    }
+    img.src = dataURL;
+    let link = target.querySelector('.fullscreen-link');
+    if(!link){
+      link = document.createElement('a');
+      link.className='fullscreen-link';
+      link.target='_blank';
+      link.setAttribute('aria-label','Open full image');
+      target.appendChild(link);
+    }
+    link.href = dataURL;
+  }
+
+  input.addEventListener('change', async (e)=>{
+    const file = e.target.files?.[0];
+    if(!file) return;
+    const ext = (file.name.split('.').pop()||'').toLowerCase();
+    if(ext==='ai' || file.type==='application/pdf'){
+      const note = document.createElement('div');
+      note.style.cssText = 'position:absolute;bottom:10px;left:10px;background:rgba(255,255,255,.9);padding:8px 10px;border-radius:10px;font-size:12px;color:#333;box-shadow:0 4px 14px rgba(0,0,0,.08)';
+      note.textContent = 'AI/PDF cannot preview in-browser. In Illustrator: File → Export As → SVG (or PNG), then upload here.';
+      stage.appendChild(note);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      const url = reader.result;
+      const imgEl = stage.querySelector('#brandLogoIMG');
+      if(imgEl){ imgEl.src = url; }
+      else{
+        const holder = document.createElement('img');
+        holder.id = 'brandLogoIMG'; holder.alt = 'Uploaded logo';
+        holder.src = url; holder.style.maxWidth='72%'; holder.style.height='auto';
+        stage.appendChild(holder);
+      }
+      if(mainLink) mainLink.href = url;
+      renderPreview(light, url);
+      renderPreview(dark, url);
+    };
+    reader.readAsDataURL(file);
+  });
+})();
+
+// Export PNG (transparent) for the centered logo (uploaded or inline)
+(function(){
+  const btn = document.getElementById('exportPNG');
   const toggle = document.getElementById('toggleBG');
   const stage = document.getElementById('logoStage');
 
-  function toggleBG(){
-    const current = getComputedStyle(stage).backgroundColor;
-    stage.style.background = current === 'rgba(0, 0, 0, 0)' || current === 'transparent' ? 'var(--neutral3)' : 'transparent';
+  function exportPNG(){
+    const size = 3000; // 3000x3000px
+    const canvas = document.createElement('canvas');
+    canvas.width = size; canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,size,size);
+
+    const nodeImg = stage.querySelector('#brandLogoIMG');
+
+    function drawAndSave(img){
+      const scale = 0.72; // match visual scale
+      const s = size * scale;
+      const x = (size - s)/2; const y = (size - s)/2;
+      ctx.drawImage(img, x, y, s, s);
+      canvas.toBlob((blob)=>{
+        const a = document.createElement('a');
+        a.download = 'AGLM_Logo_1x1_center_3000.png';
+        a.href = URL.createObjectURL(blob);
+        a.click(); URL.revokeObjectURL(a.href);
+      }, 'image/png');
+    }
+
+    if(nodeImg){
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = ()=> drawAndSave(img);
+      img.src = nodeImg.src;
+    }
   }
 
+  function toggleBG(){
+    const current = getComputedStyle(stage).backgroundColor;
+    stage.style.background = (current === 'rgba(0, 0, 0, 0)' || current === 'transparent') ? 'var(--neutral3)' : 'transparent';
+  }
+
+  btn?.addEventListener('click', exportPNG);
   toggle?.addEventListener('click', toggleBG);
-})();
-
-// Fullscreen color preview
-(function(){
-  const swatches = document.querySelectorAll('.swatches .swatch');
-  const modal = document.getElementById('colorModal');
-  const preview = document.getElementById('colorPreview');
-  const codeEl = document.getElementById('colorCode');
-
-  swatches.forEach(sw => {
-    sw.addEventListener('click', () => {
-      const chip = sw.querySelector('.chip');
-      const color = chip ? getComputedStyle(chip).backgroundColor : getComputedStyle(sw).backgroundColor;
-      const code = sw.querySelector('code')?.textContent || color;
-      preview.style.background = color;
-      codeEl.textContent = code;
-      modal.classList.add('active');
-    });
-  });
-
-  function hide(){ modal.classList.remove('active'); }
-  modal.addEventListener('click', hide);
-  window.addEventListener('keydown', e => { if(e.key === 'Escape') hide(); });
 })();
 </script>
 </body>
