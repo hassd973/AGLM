@@ -1,64 +1,438 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>A GRIEF LIKE MINE — Brand Kit (2025)</title>
-<link href="https://fonts.googleapis.com/css2?family=Modak&family=Sora:wght@300..800&display=swap" rel="stylesheet">
+
+<!-- Fonts: Modak + Sora sitewide. Sixtyfour is loaded but used ONLY for color names in the swatches. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Modak&family=Sora:wght@300..800&family=Sixtyfour&display=swap" rel="stylesheet">
+
 <style>
-body{margin:0;font-family:'Sora',sans-serif;background:#f7f6f3;color:#111;line-height:1.45;}
-.container{max-width:900px;margin:0 auto;padding:20px;}
-h1{font-family:'Modak',cursive;font-size:32px;text-align:center;margin:20px 0;}
-.section{margin-top:32px;}
-.logo-stage{position:relative;display:flex;justify-content:center;align-items:center;background:#f3f0ec;border-radius:20px;aspect-ratio:1/1;overflow:hidden;}
-.logo-stage img{max-width:70%;height:auto;}
-.logo-grid{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;}
-.logo-grid .logo-stage{flex:1 1 260px;}
+:root{
+  /* ORIGINAL BRAND PALETTE (restored exactly) */
+  --bg:#f7f6f3;          /* porcelain paper */
+  --ink:#111111;         /* near-black */
+  --blue1:#2c6fb1;       /* primary blue */
+  --blue2:#6fb1ff;       /* sky */
+  --blue3:#1d3f73;       /* deep blue */
+  --blueA:#294b81;       /* extended */
+  --blueB:#6b89bd;
+  --blueC:#335694;
+  --neutral1:#efe5d7;    /* oat */
+  --neutral2:#ebe9d5;    /* bone */
+  --neutral3:#f3f0ec;    /* porcelain */
+  --rose:#dbb5c2;        /* accent */
+
+  /* UI */
+  --card:#ffffff;
+  --muted:#4f5560;
+  --shadow: 0 10px 30px rgba(0,0,0,.08);
+
+  /* Derived tokens for components */
+  --primary: var(--blue1);
+  --primaryHover: color-mix(in srgb, var(--blue1) 80%, var(--blue2));
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:'Sora', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  line-height:1.45;
+}
+
+.container{max-width:1200px; margin:0 auto; padding:28px 20px 80px}
+.header{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:20px; padding:16px 0; position:sticky; top:0; background:linear-gradient(180deg, var(--bg), color-mix(in oklab, var(--bg) 85%, transparent));
+  backdrop-filter: blur(6px);
+  z-index:5;
+}
+.brand{ display:flex; align-items:center; gap:14px; }
+.brand .dot{
+  width:14px; height:14px; border-radius:50%; background:var(--blue1);
+  box-shadow:0 0 0 6px color-mix(in srgb, var(--blue1) 12%, transparent);
+}
+/* Title readability (no condensation) */
+.brand h1{ font-family:'Sora', sans-serif; font-weight:700; font-size:22px; margin:0; letter-spacing:.01em; line-height:1.2 }
+
+.header nav{display:flex; gap:14px; flex-wrap:wrap}
+.header a{ text-decoration:none; color:var(--ink); font-size:14px; opacity:.85; padding:6px 10px; border-radius:8px; }
+.header a:hover{ background:color-mix(in srgb, var(--blue2) 18%, transparent); }
+
+.grid{display:grid; grid-template-columns:repeat(12,1fr); gap:20px}
+.card{ background:var(--card); border-radius:18px; padding:18px; box-shadow:var(--shadow); }
+
+/* Hero */
+.hero{ position:relative; border-radius:22px; padding:28px; overflow:hidden; background:var(--card); box-shadow:var(--shadow) }
+.hero h2{ font-family:'Modak', cursive; margin:0 0 10px; font-size:28px; letter-spacing:.01em }
+.hero p{ margin:0; color:var(--muted) }
+
+/* Floating sprites — idle only */
+.particles{ position:absolute; inset:0; pointer-events:none; z-index:2 }
+.sprite{ position:absolute; width:clamp(24px,2.6vw,34px); transform-origin:50% 60%;
+         opacity:.95; filter:drop-shadow(0 2px 2px rgba(0,0,0,.12)); animation:floatY var(--dur,6s) ease-in-out infinite }
+.sprite svg{ display:block; width:100%; height:auto }
+.sprite .wing{ animation:flap var(--flap,1200ms) ease-in-out infinite; }
+@keyframes flap{ 0%,100%{ transform:rotate(0) } 50%{ transform:rotate(var(--arc,14deg)) } }
+@keyframes floatY{ 0%,100%{ transform:translateY(-6px) rotate(var(--start,0deg)) } 50%{ transform:translateY(6px) rotate(var(--end,-2deg)) } }
+
+/* Logo stage */
+.stage{ position:relative; display:grid; place-items:center; aspect-ratio:1/1; background:var(--neutral3); border-radius:20px; overflow:hidden; }
+.stage .overlay-note{ position:absolute; bottom:10px; right:10px; font-size:12px; background:rgba(255,255,255,.8); padding:6px 10px; border-radius:10px; color:#333; box-shadow:0 6px 20px rgba(0,0,0,.08); }
 .fs-btn{position:absolute;top:10px;right:10px;width:28px;height:28px;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .fs-btn:hover{background:rgba(0,0,0,.75);}
-@media(max-width:600px){.logo-grid{flex-direction:column;align-items:center;}}
+
+.actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px }
+button, .btn{
+  appearance:none; border:0; border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer; background:var(--primary); color:white;
+  box-shadow:0 6px 16px rgba(44,111,177,.25);
+}
+button:hover{ background:var(--primaryHover) }
+button.secondary{ background:#fff; color:var(--ink); border:1px solid color-mix(in srgb, var(--ink) 12%, transparent) }
+.btn:focus, button:focus{ outline:2px solid color-mix(in srgb, var(--blue2) 40%, transparent) }
+
+/* Color swatches */
+.swatches{ display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:14px }
+.swatch{ border-radius:14px; padding:14px; background:#fff; box-shadow:var(--shadow); }
+.swatch .chip{ height:56px; border-radius:12px; margin-bottom:10px }
+.swatch code{ font-family:'Sora', sans-serif; font-size:13px; color:#333; }
+/* Sixtyfour ONLY here for color titles */
+.swatch h4{ margin:2px 0 6px; font-family:'Sixtyfour', sans-serif; font-weight:400; letter-spacing:.02em; font-variation-settings:"BLED" 0, "SCAN" 0 }
+
+/* Typography examples */
+.type-row{ display:grid; grid-template-columns:1fr; gap:8px }
+.sample{ padding:12px 14px; border-radius:12px; background:#fff; box-shadow:var(--shadow) }
+.sample .cap{ font-size:12px; color:#666; margin-bottom:6px }
+.sample .text{ font-size:28px; }
+
+/* Social templates */
+.templates{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:14px }
+.frame{ background:var(--card); border-radius:18px; padding:12px; box-shadow:var(--shadow) }
+.canvas{ border-radius:12px; background:var(--neutral3); display:grid; place-items:center; overflow:hidden }
+.canvas.square{ aspect-ratio:1/1 }
+.canvas.portrait{ aspect-ratio:4/5 }
+.canvas.landscape{ aspect-ratio:16/9 }
+.canvas .ghost{ opacity:.22; font-family:'Modak', cursive; letter-spacing:.04em }
+
+/* Section headings */
+h3.section{ font-family:'Sora', sans-serif; font-weight:700; margin:28px 0 12px; font-size:22px; letter-spacing:.01em }
+
+footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
+
+/* Small helpers */
+.mono{ font-family:'Sora', sans-serif }
+.nowrap{ white-space:nowrap }
+.drop{ display:inline-block; padding:8px 10px; border:1px dashed color-mix(in srgb, var(--ink) 25%, transparent); border-radius:10px; font-size:12px; color:#555 }
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>A GRIEF LIKE MINE — Brand Kit</h1>
-
-  <section class="section" id="logo">
-    <h2>Main Logo</h2>
-    <div class="logo-stage">
-      <img src="https://i.ibb.co/N2Lr6c4s/A-Grief-Like-Mine-1x1-center.png" alt="A Grief Like Mine logo">
-      <button class="fs-btn" aria-label="Full screen">&#x2197;</button>
+  <header class="header">
+    <div class="brand">
+      <div class="dot"></div>
+      <h1>A GRIEF LIKE MINE — Brand Kit</h1>
     </div>
-    <p style="margin-top:10px;text-align:center;">Centered 1×1 mark. Maintain “G” height clearspace. Minimum size 32px.</p>
+    <nav>
+      <a href="#overview">Overview</a>
+      <a href="#logo">Logo Usage</a>
+      <a href="#colors">Colors</a>
+      <a href="#type">Typography</a>
+      <a href="#templates">Social Templates</a>
+      <a href="#photos">Photo Direction</a>
+      <a href="#exports">Exports</a>
+    </nav>
+  </header>
 
-    <div class="logo-grid">
-      <div class="logo-stage" style="background:#fff;">
-        <img src="https://i.ibb.co/mCGyLQ0D/A-Grief-Like-Mine-1x1-center-transparent.png" alt="Logo on light background">
+  <section id="overview" class="hero card">
+    <div class="particles" id="particles"></div>
+    <h2>Overview</h2>
+    <p>This page previews the <strong>2025</strong> brand system using only <strong>Modak</strong> and <strong>Sora</strong>. Brand colors are restored to the original blues + neutrals. The <span class="mono">Sixtyfour</span> font is used <em>only</em> for swatch titles in the Colors section.</p>
+  </section>
+
+  <section id="logo" class="grid" style="margin-top:22px">
+    <div class="card" style="grid-column: span 7;">
+      <h3 class="section">Main Logo — “A Grief Like Mine — 1×1 Center”</h3>
+      <div class="stage" id="logoStage">
+        <!-- Inserted actual brand logo -->
+        <img id="brandLogoIMG"
+             src="assets/A-Grief-Like-Mine-1x1-center.png"
+             alt="A Grief Like Mine — 1×1 Center"
+             style="max-width:72%;height:auto" />
         <button class="fs-btn" aria-label="Full screen">&#x2197;</button>
       </div>
-      <div class="logo-stage" style="background:#111;">
-        <img src="https://i.ibb.co/mCGyLQ0D/A-Grief-Like-Mine-1x1-center-transparent.png" alt="Logo on dark background">
-        <button class="fs-btn" aria-label="Full screen">&#x2197;</button>
+      <div class="actions">
+        <label class="drop" for="logoUpload">Upload logo (SVG / PNG / AI / PDF)</label>
+        <input id="logoUpload" type="file" accept="image/svg+xml,image/png,.ai,application/pdf" style="position:absolute;opacity:0;pointer-events:none" aria-hidden="true" />
+        <button id="exportPNG">Download PNG (transparent, 3000×3000)</button>
+        <button class="secondary" id="toggleBG">Toggle Preview BG</button>
       </div>
-      <div class="logo-stage">
-        <img src="https://i.ibb.co/chVL645z/AGLM-Symbols-3-D-logo-large.png" alt="AGLM Symbols 3D logo">
-        <button class="fs-btn" aria-label="Full screen">&#x2197;</button>
+      <div style="margin-top:10px; color:#555; font-size:13px">
+        <strong>Clearspace:</strong> Maintain “G” height around the mark. <span class="nowrap"><strong>Min size:</strong> 32 px</span>. Avoid drop‑shadows or strokes on the logo.
+      </div>
+    </div>
+
+    <div class="card" style="grid-column: span 5;">
+      <h3 class="section">Logo Usage</h3>
+      <ul style="margin:0 0 6px 18px">
+        <li>Use the centered 1×1 mark for avatars, favicons, stickers, and profile icons.</li>
+        <li>On light backgrounds, prefer the full‑color mark (blues + ink). On dark, use an all‑white version.</li>
+        <li>Do not skew, warp, or add effects. Do not re‑color outside the approved palette.</li>
+        <li>Maintain contrast ratio ≥ 4.5:1 when placing over photos.</li>
+      </ul>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; margin-top:10px">
+        <div class="stage" style="aspect-ratio:1/1; background:#fff">
+          <div id="logoLight"><img src="assets/A-Grief-Like-Mine-1x1-center-[transparent].png" alt="Logo on light" style="max-width:72%;height:auto"/></div>
+          <button class="fs-btn" aria-label="Full screen">&#x2197;</button>
+        </div>
+        <div class="stage" style="aspect-ratio:1/1; background:#111">
+          <div id="logoDark"><img src="assets/A-Grief-Like-Mine-1x1-center-[transparent].png" alt="Logo on dark" style="max-width:72%;height:auto"/></div>
+          <button class="fs-btn" aria-label="Full screen">&#x2197;</button>
+        </div>
+        <div class="stage" style="aspect-ratio:1/1; background:#fff">
+          <div id="logoAlt"><img src="assets/AGLM-Illustration_3D_logo-large.png" alt="AGLM Symbols 3D logo" style="max-width:72%;height:auto"/></div>
+          <button class="fs-btn" aria-label="Full screen">&#x2197;</button>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="section" id="type">
-    <h2>Typography</h2>
-    <p style="font-family:'Modak',cursive;font-size:28px;">Modak — Display font</p>
-    <p style="font-family:'Sora',sans-serif;">Sora — Body and UI font. The sea remembers. We move gently, not swiftly.</p>
+  <section id="colors" class="card" style="margin-top:22px">
+    <h3 class="section">Color Guide</h3>
+    <div class="swatches">
+      <div class="swatch"><div class="chip" style="background:var(--blue1)"></div><h4>Primary Blue</h4><code>#2C6FB1</code></div>
+      <div class="swatch"><div class="chip" style="background:var(--blue2)"></div><h4>Sky</h4><code>#6FB1FF</code></div>
+      <div class="swatch"><div class="chip" style="background:var(--blue3)"></div><h4>Deep Blue</h4><code>#1D3F73</code></div>
+      <div class="swatch"><div class="chip" style="background:var(--blueA)"></div><h4>Blue A</h4><code>#294B81</code></div>
+      <div class="swatch"><div class="chip" style="background:var(--blueB)"></div><h4>Blue B</h4><code>#6B89BD</code></div>
+      <div class="swatch"><div class="chip" style="background:var(--blueC)"></div><h4>Blue C</h4><code>#335694</code></div>
+      <div class="swatch"><div class="chip" style="background:var(--ink)"></div><h4>Ink</h4><code>#111111</code></div>
+      <div class="swatch"><div class="chip" style="background:var(--neutral3)"></div><h4>Porcelain</h4><code>#F3F0EC</code></div>
+      <div class="swatch"><div class="chip" style="background:var(--neutral2)"></div><h4>Bone</h4><code>#EBE9D5</code></div>
+      <div class="swatch"><div class="chip" style="background:var(--neutral1)"></div><h4>Oat</h4><code>#EFE5D7</code></div>
+      <div class="swatch"><div class="chip" style="background:var(--rose)"></div><h4>Rose Accent</h4><code>#DBB5C2</code></div>
+    </div>
+    <p style="margin-top:10px; color:#555; font-size:13px">All UI and illustrations should reference these CSS tokens. Neutrals for surfaces; blues for hero/accents; rose sparingly.</p>
   </section>
+
+  <section id="type" class="card" style="margin-top:22px">
+    <h3 class="section">Typography</h3>
+    <div class="type-row">
+      <div class="sample">
+        <div class="cap">Display — Modak</div>
+        <div class="text" style="font-family:'Modak', cursive;">A Grief Like Mine</div>
+      </div>
+      <div class="sample">
+        <div class="cap">Body & UI — Sora</div>
+        <div class="text" style="font-family:'Sora', sans-serif; font-weight:500;">The sea remembers. We move gently, not swiftly.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="templates" class="card" style="margin-top:22px">
+    <h3 class="section">Social Templates</h3>
+    <div class="templates">
+      <div class="frame">
+        <div class="canvas square"><div class="ghost">1×1</div></div>
+        <div style="font-size:12px; margin-top:6px; color:#555">Profile / Grid</div>
+      </div>
+      <div class="frame">
+        <div class="canvas portrait"><div class="ghost">4×5</div></div>
+        <div style="font-size:12px; margin-top:6px; color:#555">IG Portrait</div>
+      </div>
+      <div class="frame">
+        <div class="canvas landscape"><div class="ghost">16×9</div></div>
+        <div style="font-size:12px; margin-top:6px; color:#555">Video / YouTube</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="photos" class="card" style="margin-top:22px">
+    <h3 class="section">Photo Direction</h3>
+    <ul style="margin:0 0 0 18px">
+      <li>Cool light, north‑facing or overcast. Avoid direct midday sun.</li>
+      <li>Textures: paper, linen, water, matte ceramics. Minimal gloss.</li>
+      <li>Palette: blues + bone neutrals; occasional rose accent.</li>
+      <li>Negative space for type; keep horizon lines calm.</li>
+    </ul>
+  </section>
+
+  <section id="exports" class="card" style="margin-top:22px">
+    <h3 class="section">Exports</h3>
+    <p>Upload your approved logo (SVG or PNG) and click <strong>Download PNG</strong> to export a high‑res transparent PNG of the centered logo (3000×3000). If you only have an <strong>.ai</strong> file, export it to <em>SVG</em> or <em>PNG</em> first, then upload here.</p>
+    <div style="font-size:12px; color:#666">Note: Export uses client‑side canvas for transparency and crisp edges.</div>
+  </section>
+
+  <footer>© 2025 A GRIEF LIKE MINE — Brand system preview</footer>
 </div>
 
+<!-- Hidden symbol rigs for the idle-only bird & butterfly -->
+<svg width="0" height="0" aria-hidden="true" focusable="false">
+  <symbol id="BIRD_RIG" viewBox="0 0 100 80">
+    <path fill="var(--blue1)" d="M53,44c8,0,17-8,17-16c0-9-9-16-20-16c-10,0-18,6-21,13c-8,2-15,9-15,16c0,7,6,12,15,12c9,0,17-4,24-9z"/>
+    <path fill="var(--blue3)" d="M35,45l-18,16l10-3l-7,12l17-17z"/>
+    <path fill="var(--blue2)" d="M70,26l14-4l-10,10z"/>
+    <circle cx="61" cy="23" r="2.1" fill="#0b1d36"/>
+    <g class="wing" style="transform-origin:40px 33px; --arc:10deg">
+      <path fill="var(--blue2)" d="M18,20c8,3,18,8,24,14c-8,0-17-1-26-3c-6-2-6-9,2-11z"/>
+    </g>
+    <g class="wing" style="transform-origin:62px 38px; --arc:10deg">
+      <path fill="var(--blue2)" d="M42,30c10,2,21,7,28,13c-8,1-17,0-27-2c-6-2-6-9-1-11z"/>
+    </g>
+  </symbol>
+  <symbol id="BUTTER_RIG" viewBox="0 0 100 80">
+    <rect x="48" y="30" width="4" height="22" rx="2" fill="var(--blue3)"/>
+    <circle cx="50" cy="28" r="5" fill="var(--blue3)"/>
+    <g class="wing" style="transform-origin:52px 40px; --arc:16deg">
+      <path fill="var(--blue1)" d="M50,40 C25,15 10,35 15,47 C20,60 35,58 48,46 Z"/>
+      <circle cx="37" cy="45" r="4" fill="var(--blue2)"/>
+    </g>
+    <g class="wing" style="transform-origin:48px 40px; --arc:-16deg">
+      <path fill="var(--blue1)" d="M50,40 C75,15 90,35 85,47 C80,60 65,58 52,46 Z"/>
+      <circle cx="63" cy="45" r="4" fill="var(--blue2)"/>
+    </g>
+  </symbol>
+</svg>
+
 <script>
+// Idle-only floating sprites in the hero
+(function(){
+  const particles = document.getElementById('particles');
+  const R = (a,b)=> a + Math.random()*(b-a);
+
+  function spawn(kind, x, y){
+    const el = document.createElement('div');
+    el.className = 'sprite ' + kind;
+    const sv = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    sv.setAttribute('viewBox','0 0 100 80');
+    const use = document.createElementNS('http://www.w3.org/2000/svg','use');
+    use.setAttributeNS('http://www.w3.org/1999/xlink','href', kind==='bird'?'#BIRD_RIG':'#BUTTER_RIG');
+    sv.appendChild(use); el.appendChild(sv);
+    particles.appendChild(el);
+
+    const w = particles.getBoundingClientRect().width;
+    const h = particles.getBoundingClientRect().height;
+    const px = (x ?? R(w*0.1, w*0.9));
+    const py = (y ?? R(h*0.2, h*0.8));
+
+    el.style.left = (px - 22) + 'px';
+    el.style.top  = (py - 20) + 'px';
+    el.style.setProperty('--dur', Math.round(R(5200, 8200)) + 'ms');
+    el.style.setProperty('--flap', Math.round(R(900, 1400)) + 'ms');
+    el.style.setProperty('--arc', R(10,16) + 'deg');
+    el.style.setProperty('--start', R(-2,2) + 'deg');
+    el.style.setProperty('--end', R(-4,2) + 'deg');
+  }
+
+  // a couple floating friends
+  spawn('bird'); spawn('butter');
+  setTimeout(()=> spawn('butter'), 600);
+})();
+
+// Logo upload & previews
+(function(){
+  const input = document.getElementById('logoUpload');
+  const stage = document.getElementById('logoStage');
+  const light = document.getElementById('logoLight');
+  const dark  = document.getElementById('logoDark');
+
+  document.querySelector('label[for="logoUpload"]').addEventListener('click',()=> input.click());
+
+  function clear(node){ while(node && node.firstChild) node.removeChild(node.firstChild); }
+  function renderPreview(target, dataURL){
+    if(!target) return;
+    const img = new Image();
+    img.src = dataURL; img.style.maxWidth='72%'; img.style.height='auto';
+    const wrap = document.createElement('div');
+    wrap.style.display='grid'; wrap.style.placeItems='center'; wrap.appendChild(img);
+    clear(target); target.appendChild(wrap);
+  }
+
+  input.addEventListener('change', async (e)=>{
+    const file = e.target.files?.[0];
+    if(!file) return;
+    const ext = (file.name.split('.').pop()||'').toLowerCase();
+    if(ext==='ai' || file.type==='application/pdf'){
+      const note = document.createElement('div');
+      note.style.cssText = 'position:absolute;bottom:10px;left:10px;background:rgba(255,255,255,.9);padding:8px 10px;border-radius:10px;font-size:12px;color:#333;box-shadow:0 4px 14px rgba(0,0,0,.08)';
+      note.textContent = 'AI/PDF cannot preview in-browser. In Illustrator: File → Export As → SVG (or PNG), then upload here.';
+      stage.appendChild(note);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      const url = reader.result;
+      // replace current img if present
+      const imgEl = stage.querySelector('#brandLogoIMG');
+      if(imgEl){ imgEl.src = url; }
+      else{
+        const holder = document.createElement('img');
+        holder.id = 'brandLogoIMG'; holder.alt = 'Uploaded logo';
+        holder.src = url; holder.style.maxWidth='72%'; holder.style.height='auto';
+        stage.appendChild(holder);
+      }
+      // side previews
+      renderPreview(light, url);
+      renderPreview(dark, url);
+    };
+    reader.readAsDataURL(file);
+  });
+})();
+
+// Export PNG (transparent) for the centered logo (uploaded or inline)
+(function(){
+  const btn = document.getElementById('exportPNG');
+  const toggle = document.getElementById('toggleBG');
+  const stage = document.getElementById('logoStage');
+
+  function exportPNG(){
+    const size = 3000; // 3000x3000px
+    const canvas = document.createElement('canvas');
+    canvas.width = size; canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,size,size);
+
+    const nodeImg = stage.querySelector('#brandLogoIMG');
+
+    function drawAndSave(img){
+      const scale = 0.72; // match visual scale
+      const s = size * scale;
+      const x = (size - s)/2; const y = (size - s)/2;
+      ctx.drawImage(img, x, y, s, s);
+      canvas.toBlob((blob)=>{
+        const a = document.createElement('a');
+        a.download = 'AGLM_Logo_1x1_center_3000.png';
+        a.href = URL.createObjectURL(blob);
+        a.click(); URL.revokeObjectURL(a.href);
+      }, 'image/png');
+    }
+
+    if(nodeImg){
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = ()=> drawAndSave(img);
+      img.src = nodeImg.src;
+    }
+  }
+
+  function toggleBG(){
+    const current = getComputedStyle(stage).backgroundColor;
+    stage.style.background = (current === 'rgba(0, 0, 0, 0)' || current === 'transparent') ? 'var(--neutral3)' : 'transparent';
+  }
+
+  btn?.addEventListener('click', exportPNG);
+  toggle?.addEventListener('click', toggleBG);
+})();
+
+// Fullscreen buttons for logos
 document.querySelectorAll('.fs-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
-    const img=btn.parentElement.querySelector('img');
-    if(img.requestFullscreen){img.requestFullscreen();}
+    const img = btn.parentElement.querySelector('img');
+    if(img && img.requestFullscreen){img.requestFullscreen();}
   });
 });
 </script>
