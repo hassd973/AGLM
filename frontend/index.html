@@ -172,6 +172,7 @@ button.secondary{ background:#fff; color:var(--ink); border:1px solid color-mix(
 .canvas.landscape{ aspect-ratio:16/9 }
 .canvas .ghost{ opacity:.22; font-family:'Modak', cursive; letter-spacing:.04em }
 .canvas img{ max-width:80%; max-height:80%; width:auto; height:auto; object-fit:contain; }
+.canvas video{ max-width:80%; max-height:80%; width:auto; height:auto; object-fit:contain; }
 .download{ margin-top:6px; font-size:12px; }
 
 /* Section headings */
@@ -376,7 +377,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     <h3 class="section">Social Templates</h3>
     <button id="cycleLogo" class="btn secondary" style="margin-bottom:14px">Next Logo</button>
     <div id="templateColors" class="swatches" style="margin-bottom:14px"></div>
-    <div class="templates">
+    <div class="templates" id="logoTemplates">
       <div class="frame">
         <div class="canvas square"><img class="template-img" alt="Logo"><div class="ghost">1×1</div></div>
         <button class="download" data-size="square">Download 1×1</button>
@@ -390,6 +391,27 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       <div class="frame">
         <div class="canvas landscape"><img class="template-img" alt="Logo"><div class="ghost">16×9</div></div>
         <button class="download" data-size="landscape">Download 16×9</button>
+        <div style="font-size:12px; margin-top:6px; color:#555">Video / YouTube</div>
+      </div>
+    </div>
+
+    <h4 style="margin-top:30px">Break Animations</h4>
+    <button id="cycleVideo" class="btn secondary" style="margin-bottom:14px">Next Animation</button>
+    <div id="videoColors" class="swatches" style="margin-bottom:14px"></div>
+    <div class="templates" id="breakTemplates">
+      <div class="frame">
+        <div class="canvas square"><video class="break-video" loop muted playsinline></video><div class="ghost">1×1</div></div>
+        <button class="download-vid" data-size="square">Download 1×1</button>
+        <div style="font-size:12px; margin-top:6px; color:#555">Profile / Grid</div>
+      </div>
+      <div class="frame">
+        <div class="canvas portrait"><video class="break-video" loop muted playsinline></video><div class="ghost">4×5</div></div>
+        <button class="download-vid" data-size="portrait">Download 4×5</button>
+        <div style="font-size:12px; margin-top:6px; color:#555">IG Portrait</div>
+      </div>
+      <div class="frame">
+        <div class="canvas landscape"><video class="break-video" loop muted playsinline></video><div class="ghost">16×9</div></div>
+        <button class="download-vid" data-size="landscape">Download 16×9</button>
         <div style="font-size:12px; margin-top:6px; color:#555">Video / YouTube</div>
       </div>
     </div>
@@ -420,7 +442,6 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
         <button id="stopBtn">Deactivate Camera</button>
         <button id="switchBtn">Switch Camera</button>
         <button id="filterBtn">Next Filter</button>
-        <button id="comboBtn">Suggest Color Combos</button>
         <button id="downloadPhoto">Download Photo</button>
           <button id="fullscreenBtn">Full Screen</button>
           <select id="overlaySelect">
@@ -435,6 +456,11 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
         </div>
       <p id="suggestion">Camera inactive.</p>
       <div id="combos" class="swatches"></div>
+
+      <div id="photoExample" style="margin-top:20px;">
+        <img src="assets/photo%20tool.png" alt="Photo tool example" style="max-width:100%;border-radius:12px;"/>
+        <video id="photoExampleVideo" src="assets/Photo%20Tool.mp4" loop muted playsinline style="width:100%;max-width:480px;border-radius:12px;margin-top:10px"></video>
+      </div>
     </div>
   </section>
 
@@ -789,9 +815,9 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   ];
   const colors=['#2c6fb1','#6fb1ff','#1d3f73','#de9146','#111111','#dbb5c2','#efe5d7','#ebe9d5','#f3f0ec'];
   let idx=0; let currentColor='#f3f0ec';
-  const imgs=document.querySelectorAll('.template-img');
-  const canvases=document.querySelectorAll('.templates .canvas');
-  const ghosts=document.querySelectorAll('.canvas .ghost');
+  const imgs=document.querySelectorAll('#logoTemplates .template-img');
+  const canvases=document.querySelectorAll('#logoTemplates .canvas');
+  const ghosts=document.querySelectorAll('#logoTemplates .ghost');
   const colorWrap=document.getElementById('templateColors');
 
   colors.forEach(c=>{
@@ -834,6 +860,40 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   document.querySelectorAll('.download').forEach(btn=>btn.addEventListener('click',()=>download(btn.dataset.size)));
 })();
 
+// Break videos cycling & downloads
+(function(){
+  const videos=['assets/social%201.mp4','assets/social%202.mp4','assets/social%203.mp4'];
+  const colors=['#2c6fb1','#6fb1ff','#1d3f73','#de9146','#111111','#dbb5c2','#efe5d7','#ebe9d5','#f3f0ec'];
+  let vidIdx=0; let currentColor='#f3f0ec';
+  const vids=document.querySelectorAll('.break-video');
+  const canvases=document.querySelectorAll('#breakTemplates .canvas');
+  const ghosts=document.querySelectorAll('#breakTemplates .ghost');
+  const colorWrap=document.getElementById('videoColors');
+
+  colors.forEach(c=>{
+    const sw=document.createElement('div');
+    sw.className='swatch';
+    sw.innerHTML=`<div class="chip" style="background:${c}"></div>`;
+    sw.addEventListener('click',()=>{currentColor=c; canvases.forEach(cv=>cv.style.background=c);});
+    colorWrap?.appendChild(sw);
+  });
+
+  function render(){
+    vids.forEach(v=>{v.src=videos[vidIdx]; v.load(); v.play();});
+    canvases.forEach(cv=>cv.style.background=currentColor);
+    ghosts.forEach(g=>g.style.display='none');
+  }
+  document.getElementById('cycleVideo')?.addEventListener('click',()=>{vidIdx=(vidIdx+1)%videos.length; render();});
+  render();
+
+  document.querySelectorAll('.download-vid').forEach(btn=>btn.addEventListener('click',()=>{
+    const a=document.createElement('a');
+    a.href=videos[vidIdx];
+    a.download=`AGLM_break_${btn.dataset.size}.mp4`;
+    a.click();
+  }));
+})();
+
 // Live photo color guide with camera controls
 (function(){
   const video=document.getElementById('video');
@@ -843,7 +903,6 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   const suggestion=document.getElementById('suggestion');
   const combos=document.getElementById('combos');
   const filterBtn=document.getElementById('filterBtn');
-  const comboBtn=document.getElementById('comboBtn');
   const startBtn=document.getElementById('startBtn');
   const stopBtn=document.getElementById('stopBtn');
   const switchBtn=document.getElementById('switchBtn');
@@ -882,6 +941,14 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       for(let i=0;i<data.length;i+=4){r+=data[i];g+=data[i+1];b+=data[i+2];}
       const count=data.length/4;
       r/=count;g/=count;b/=count;
+      const sorted=[...palette].sort((a,b)=>colorDistance(a,r,g,b)-colorDistance(b,r,g,b)).slice(0,3);
+      combos.innerHTML='';
+      sorted.forEach(c=>{
+        const div=document.createElement('div');
+        div.className='swatch';
+        div.style.background=c;
+        combos.appendChild(div);
+      });
       const bright=(0.2126*r+0.7152*g+0.0722*b)/255;
       let best=palette[0],bestScore=0;
       palette.forEach(c=>{
@@ -924,24 +991,6 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   filterBtn?.addEventListener('click',()=>{
     filterIndex=(filterIndex+1)%filters.length;
     video.style.filter=filters[filterIndex];
-  });
-
-  comboBtn?.addEventListener('click',()=>{
-    if(!stream) return;
-    ctx.drawImage(video,0,0,canvas.width,canvas.height);
-    const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
-    let r=0,g=0,b=0;
-    for(let i=0;i<data.length;i+=4){r+=data[i];g+=data[i+1];b+=data[i+2];}
-    const count=data.length/4;
-    r/=count;g/=count;b/=count;
-    const sorted=[...palette].sort((a,b)=>colorDistance(a,r,g,b)-colorDistance(b,r,g,b)).slice(0,3);
-    combos.innerHTML='';
-    sorted.forEach(c=>{
-      const div=document.createElement('div');
-      div.className='swatch';
-      div.style.background=c;
-      combos.appendChild(div);
-    });
   });
 
   startBtn?.addEventListener('click',startCamera);
@@ -1000,10 +1049,12 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       const el=document.getElementById('photoTool');
       if(el.requestFullscreen) el.requestFullscreen();
       else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      else if(video.webkitEnterFullscreen) video.webkitEnterFullscreen();
     });
     exitFs?.addEventListener('click',()=>{
       if(document.exitFullscreen) document.exitFullscreen();
       else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+      else if(video.webkitExitFullscreen) video.webkitExitFullscreen();
     });
 
   document.addEventListener('fullscreenchange',()=>{
@@ -1052,6 +1103,15 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       logo.classList.add('show');
     }
   });
+})();
+
+// Photo example video interactions
+(function(){
+  const v=document.getElementById('photoExampleVideo');
+  if(!v) return;
+  v.addEventListener('mouseenter',()=>v.play());
+  v.addEventListener('mouseleave',()=>v.pause());
+  v.addEventListener('click',()=>{ if(v.paused) v.play(); else v.pause(); });
 })();
 </script>
 </body>
