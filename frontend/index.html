@@ -722,7 +722,11 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     const ctx=canvas.getContext('2d');
     const preview=document.getElementById('typePreview');
     const btn=document.getElementById('downloadPNG');
-    const logos=['https://i.ibb.co/N2Lr6c4s/A-Grief-Like-Mine-1x1-center.png','assets/logo-top-1.svg','assets/logo-top-2.svg','assets/logo-top-3.svg'];
+    const logos=[
+      'https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png',
+      'https://i.ibb.co/rGKS5vTC/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered.png',
+      'https://i.ibb.co/Lh8MQXSZ/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered-2.png'
+    ];
     let lidx=0;
     const logo=new Image();
     logo.crossOrigin='anonymous';
@@ -743,15 +747,21 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       lines.forEach((line,i)=>ctx.fillText(line,1500,start + i*lh));
       const pos=posSel.value;
       const size=300;
+      let dw=0,dh=0;
+      if(logo.width && logo.height){
+        const scale=size/Math.max(logo.width,logo.height);
+        dw=logo.width*scale;
+        dh=logo.height*scale;
+      }
       const map={
-        'bottom-right':[3000-size-50,3000-size-50],
-        'bottom-left':[50,3000-size-50],
-        'top-right':[3000-size-50,50],
+        'bottom-right':[3000-dw-50,3000-dh-50],
+        'bottom-left':[50,3000-dh-50],
+        'top-right':[3000-dw-50,50],
         'top-left':[50,50],
-        'top-center':[(3000-size)/2,50],
-        'bottom-center':[(3000-size)/2,3000-size-50]
+        'top-center':[(3000-dw)/2,50],
+        'bottom-center':[(3000-dw)/2,3000-dh-50]
       };
-      if(map[pos]) ctx.drawImage(logo,map[pos][0],map[pos][1],size,size);
+      if(dw && dh && map[pos]) ctx.drawImage(logo,map[pos][0],map[pos][1],dw,dh);
       const url=canvas.toDataURL('image/png');
       preview.style.backgroundImage=`url(${url})`;
       preview.style.backgroundSize='cover';
