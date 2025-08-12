@@ -7,6 +7,11 @@ This repository hosts a static site used to share logo options and brand colors 
 Open `frontend/index.html` to view the full interactive brand kit.
 Open `brand-guide.html` for a concise logo/color overview suitable for client review.
 
+## Updates
+
+- Social templates now accept uploaded photos or videos, let you overlay AGLM logos and custom text, support multiple aspect ratios, and export images. Video uploads are limited to 15 seconds.
+- The photo tool's camera can cycle through brand colors with an overlay to help match the shooting environment.
+
 ## Deploying on Render
 
 1. Push this repository to GitHub.
