@@ -56,7 +56,7 @@ body{
 }
 img{max-width:100%;height:auto}
 
-.container{max-width:1200px; margin:0 auto; padding:28px 20px 80px}
+.container{width:100%; margin:0 auto; padding:28px 20px 80px}
 .header{
   display:flex; align-items:center; justify-content:space-between;
   gap:20px; padding:16px 0; position:sticky; top:0; background:linear-gradient(180deg, var(--bg), color-mix(in oklab, var(--bg) 85%, transparent));
@@ -82,7 +82,10 @@ img{max-width:100%;height:auto}
 .menu-wrap #menuToggle{display:none;background:none;border:none;font-size:24px;cursor:pointer;padding:6px 10px;border-radius:8px}
 @media(max-width:700px){.menu-wrap #menuToggle{display:block}}
 .header nav{display:flex; gap:14px; flex-wrap:wrap}
-.header nav.hidden{display:none}
+@media(max-width:700px){
+  .header nav{display:none}
+  .header nav:not(.hidden){display:flex}
+}
 .header a{ text-decoration:none; color:var(--ink); font-size:14px; opacity:.85; padding:6px 10px; border-radius:8px; }
 .header a:hover{ background:color-mix(in srgb, var(--blue2) 18%, transparent); }
 
@@ -215,7 +218,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     </div>
     <div class="menu-wrap">
       <button id="menuToggle" type="button" aria-label="Toggle menu">☰</button>
-      <nav>
+      <nav class="hidden">
         <a href="#overview">Overview</a>
         <a href="#logo">Logo Usage</a>
         <a href="#colors">Colors</a>
@@ -457,9 +460,17 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       <p id="suggestion">Camera inactive.</p>
       <div id="combos" class="swatches"></div>
 
-      <div id="photoExample" style="margin-top:20px;">
-        <img src="assets/photo%20tool.png" alt="Photo tool example" style="max-width:100%;border-radius:12px;"/>
-        <video id="photoExampleVideo" src="assets/Photo%20Tool.mp4" loop muted playsinline style="width:100%;max-width:480px;border-radius:12px;margin-top:10px"></video>
+      <div id="photoExample" class="templates" style="margin-top:20px;">
+        <div class="frame">
+          <div class="canvas landscape">
+            <img src="assets/photo%20tool.png" alt="Photo tool example"/>
+          </div>
+        </div>
+        <div class="frame">
+          <div class="canvas landscape">
+            <video id="photoExampleVideo" src="assets/Photo%20Tool.mp4" loop muted playsinline></video>
+          </div>
+        </div>
       </div>
     </div>
   </section>
