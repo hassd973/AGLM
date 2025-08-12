@@ -9,7 +9,7 @@
   :root{ --bg:#f7f6f3; --ink:#111; --blue1:#2c6fb1; --blue2:#6fb1ff; --blue3:#1d3f73; }
   html,body{height:100%}
   body{margin:0;background:var(--bg);display:grid;place-items:center;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-  .wrap{position:relative; width:min(1100px,92vw);}
+  .wrap{position:relative; width:min(1100px,92vw); --windX:0deg; --windY:0deg; --flap:900ms;}
   .logo-svg{width:100%; height:auto; display:block;}
   /* flying sprites */
   .particles{position:absolute; inset:0; pointer-events:none}
@@ -29,11 +29,13 @@
 
   /* --- rig & typography dynamics --- */
   #A_GRIEF_LIKE_MINE, #A_GRIEF_LIKE_MINE * { transform-box: fill-box; }
-  .glyph { transform-box: fill-box; transform-origin: 50% 50%; will-change: transform; transition: transform .25s ease, filter .25s ease; }
-  .glyph.react { transform: translateY(-2px) scale(1.02); filter: drop-shadow(0 2px 0 rgba(0,0,0,.1)); }
+  .glyph { transform-box: fill-box; transform-origin: 50% 50%; will-change: transform;
+           transition: filter .25s ease; transform: skewX(var(--windX)) skewY(var(--windY)); }
+  .glyph.react { transform: skewX(var(--windX)) skewY(var(--windY)) translateY(-2px) scale(1.02);
+                 filter: drop-shadow(0 2px 0 rgba(0,0,0,.1)); }
 
   /* overlay perches for rigged creatures */
-  .perch-rig{ position:absolute; pointer-events:none; }
+  .perch-rig{ position:absolute; pointer-events:auto; cursor:pointer; }
   .perch-rig svg{ display:block; width:100%; height:auto; }
 
   /* professional wing flaps */
@@ -554,9 +556,26 @@
   particles.className = 'particles';
   wrap.appendChild(particles);
 
+  // add perched bird and butterfly using full vectors
+  const perches = [
+    {x:0.12, y:0.18, use:'#BIRD_PRO'},
+    {x:0.78, y:0.22, use:'#BUTTER_RIG_PRO'}
+  ];
+  perches.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='perch-rig';
+    d.style.left=(p.x*100)+'%';
+    d.style.top=(p.y*100)+'%';
+    d.style.width='120px';
+    d.style.height='90px';
+    d.innerHTML=`<svg viewBox="0 0 120 90"><use href="${p.use}"/></svg>`;
+    wrap.appendChild(d);
+  });
+
   function rand(min, max){ return Math.random()*(max-min)+min; }
   function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
+  let flapDur = 900; // ms for perched wings, used as base for flyers
   function makeSprite(x, y, kind){
     const el = document.createElement('div');
     el.className = 'sprite';
@@ -571,7 +590,7 @@
     el.style.setProperty('--rm', rand(-10,6)+'deg');
     el.style.setProperty('--s', rand(0.8,1.2));
     el.style.setProperty('--dur', rand(2200,3400)+'ms');
-    el.style.setProperty('--flap', rand(420,980)+'ms');
+    el.style.setProperty('--flap', rand(420,980)*(flapDur/900)+'ms');
 
     el.innerHTML = `<svg viewBox="0 0 100 80" width="100%" height="100%"><use href="#${kind}"/></svg>`;
     particles.appendChild(el);
@@ -584,7 +603,7 @@
   }
 
   function spawnFlock(x, y, count=14){
-    const rigs = ['BIRD_RIG','BUTTER_RIG','BIRD_RIG','BIRD_RIG','BUTTER_RIG'];
+    const rigs = ['BIRD_RIG','BUTTER_RIG'];
     for(let i=0;i<count;i++){
       const k = pick(rigs);
       makeSprite(x + rand(-12,12), y + rand(-8,8), k);
@@ -601,6 +620,21 @@
     const p = localPoint(e);
     spawnFlock(p.x, p.y, 16);
   });
+
+  // gentle wind based on mouse movement
+  let windScale = 1, targetX = 0, targetY = 0, windX = 0, windY = 0;
+  wrap.addEventListener('mousemove', e=>{
+    targetX = e.movementX * 0.2 * windScale;
+    targetY = e.movementY * -0.2 * windScale;
+  });
+  (function windLoop(){
+    windX += (targetX - windX)*0.08;
+    windY += (targetY - windY)*0.08;
+    targetX *= 0.9; targetY *= 0.9;
+    wrap.style.setProperty('--windX', windX.toFixed(2)+'deg');
+    wrap.style.setProperty('--windY', windY.toFixed(2)+'deg');
+    requestAnimationFrame(windLoop);
+  })();
 
   // Make each path/group inside the title SVG responsive on hover
   const logo = document.querySelector('#A_GRIEF_LIKE_MINE');
@@ -633,6 +667,12 @@
       node.setAttribute('aria-label','Title glyph');
     });
   }
+
+  // expose minimal controls for tweaking from console
+  window.KT = {
+    wind:(f)=> windScale = f,
+    flap:(ms)=>{ flapDur = ms; wrap.style.setProperty('--flap', ms+'ms'); }
+  };
 })();
 </script>
 
