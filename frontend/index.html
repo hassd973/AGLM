@@ -183,8 +183,8 @@ button.secondary{ background:#fff; color:var(--ink); border:1px solid color-mix(
   height:auto;
 }
 .canvas video{ max-width:80%; max-height:80%; width:auto; height:auto; object-fit:contain; object-position:center; }
-.canvas .user-media{width:100%;height:100%;object-fit:cover;max-width:none;max-height:none;}
-.canvas .template-text{color:#fff;font-family:'Sora',sans-serif;font-size:clamp(16px,5vw,32px);text-align:center;padding:10px;text-shadow:0 0 4px rgba(0,0,0,.6);}
+.canvas .user-media{width:100%;height:100%;object-fit:cover;max-width:none;max-height:none;position:relative;z-index:1;}
+.canvas .template-text{position:relative;z-index:2;color:#fff;font-family:'Sora',sans-serif;font-size:clamp(16px,5vw,32px);text-align:center;padding:10px;text-shadow:0 0 4px rgba(0,0,0,.6);}
 
 /* Logo positioning helpers */
 .canvas.logo-center .template-img{width:80%;align-self:center;justify-self:center;}
@@ -394,7 +394,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   </section>
 
   <section id="kinetic" class="card" style="margin-top:22px">
-    <h3 class="section">Kinetic Typography</h3>
+    <h3 class="section" title="Animated text samples">Kinetic Typography</h3>
     <div class="stage">
       <iframe
         src="kinetic-typography.html"
@@ -408,67 +408,69 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   </section>
 
   <section id="templates" class="card" style="margin-top:22px">
-    <h3 class="section">Social Templates</h3>
+    <h3 class="section" title="Create shareable graphics">Social Templates</h3>
     <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:center;">
-      <label for="mediaUpload" class="btn secondary">Upload Photo/Video</label>
+      <label for="mediaUpload" class="btn secondary" title="Upload an image or short video">Upload Photo/Video</label>
       <input id="mediaUpload" type="file" accept="image/*,video/*" style="display:none" />
-      <input id="templateText" type="text" placeholder="Add text" style="flex:1;min-width:120px" />
-      <select id="templateFont">
+      <input id="templateText" type="text" placeholder="Add text" style="flex:1;min-width:120px" title="Enter overlay text" />
+      <select id="templateFont" title="Choose text font">
         <option value="Sora">Sora</option>
         <option value="Modak">Modak</option>
       </select>
-      <select id="templateLogoPos">
+      <select id="templateLogoPos" title="Logo position">
         <option value="center">Center</option>
         <option value="top">Top Center</option>
         <option value="bottom">Bottom Center</option>
         <option value="left">Left</option>
         <option value="right">Right</option>
       </select>
-      <button id="cycleLogo" class="btn secondary">Next Logo</button>
+      <button id="cycleLogo" class="btn secondary" title="Switch logo">Next Logo</button>
+      <button id="toggleLogo" class="btn secondary" title="Show or hide the logo">Hide Logo</button>
+      <button id="removeMedia" class="btn secondary" title="Remove uploaded media">Remove Media</button>
     </div>
     <div id="templateColors" class="swatches" style="margin-bottom:14px"></div>
     <div class="templates" id="logoTemplates">
       <div class="frame">
         <div class="canvas square"><div class="template-text"></div><img class="template-img" alt="Logo"><div class="ghost">1×1</div></div>
-        <button class="download" data-size="square">Download 1×1</button>
+        <button class="download" data-size="square" title="Download square graphic">Download 1×1</button>
         <div style="font-size:12px; margin-top:6px; color:#555">Profile / Grid</div>
       </div>
       <div class="frame">
         <div class="canvas portrait"><div class="template-text"></div><img class="template-img" alt="Logo"><div class="ghost">4×5</div></div>
-        <button class="download" data-size="portrait">Download 4×5</button>
+        <button class="download" data-size="portrait" title="Download portrait graphic">Download 4×5</button>
         <div style="font-size:12px; margin-top:6px; color:#555">IG Portrait</div>
       </div>
       <div class="frame">
         <div class="canvas landscape"><div class="template-text"></div><img class="template-img" alt="Logo"><div class="ghost">16×9</div></div>
-        <button class="download" data-size="landscape">Download 16×9</button>
+        <button class="download" data-size="landscape" title="Download landscape graphic">Download 16×9</button>
         <div style="font-size:12px; margin-top:6px; color:#555">Video / YouTube</div>
       </div>
     </div>
 
-    <h4 style="margin-top:30px">Break Animations</h4>
-    <button id="cycleVideo" class="btn secondary" style="margin-bottom:14px">Next Animation</button>
+    <h4 style="margin-top:30px" title="Looping videos for breaks">Break Animations</h4>
+    <button id="cycleVideo" class="btn secondary" style="margin-bottom:14px" title="Switch to next break animation">Next Animation</button>
     <div id="videoColors" class="swatches" style="margin-bottom:14px"></div>
     <div class="templates" id="breakTemplates">
       <div class="frame">
         <div class="canvas square"><video class="break-video" loop muted playsinline></video><div class="ghost">1×1</div></div>
-        <button class="download-vid" data-size="square">Download 1×1</button>
+        <button class="download-vid" data-size="square" title="Download square animation">Download 1×1</button>
         <div style="font-size:12px; margin-top:6px; color:#555">Profile / Grid</div>
       </div>
       <div class="frame">
         <div class="canvas portrait"><video class="break-video" loop muted playsinline></video><div class="ghost">4×5</div></div>
-        <button class="download-vid" data-size="portrait">Download 4×5</button>
+        <button class="download-vid" data-size="portrait" title="Download portrait animation">Download 4×5</button>
         <div style="font-size:12px; margin-top:6px; color:#555">IG Portrait</div>
       </div>
       <div class="frame">
         <div class="canvas landscape"><video class="break-video" loop muted playsinline></video><div class="ghost">16×9</div></div>
-        <button class="download-vid" data-size="landscape">Download 16×9</button>
+        <button class="download-vid" data-size="landscape" title="Download landscape animation">Download 16×9</button>
         <div style="font-size:12px; margin-top:6px; color:#555">Video / YouTube</div>
       </div>
     </div>
   </section>
 
   <section id="photos" class="card" style="margin-top:22px">
-    <h3 class="section">Photo Direction</h3>
+    <h3 class="section" title="Photography tips and camera tool">Photo Direction</h3>
     <ul style="margin:0 0 0 18px">
       <li>Cool light, north‑facing or overcast. Avoid direct midday sun.</li>
       <li>Textures: paper, linen, water, matte ceramics. Minimal gloss.</li>
@@ -489,21 +491,21 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
         <button id="exitFs" class="exit">↩</button>
       </div>
       <div class="controls">
-        <button id="startBtn">Activate Camera</button>
-        <button id="stopBtn">Deactivate Camera</button>
-        <button id="switchBtn">Switch Camera</button>
-        <button id="colorBtn">Next Color</button>
-        <button id="downloadPhoto">Download Photo</button>
-          <button id="fullscreenBtn">Full Screen</button>
-          <select id="overlaySelect">
+        <button id="startBtn" title="Enable your camera">Activate Camera</button>
+        <button id="stopBtn" title="Turn off the camera">Deactivate Camera</button>
+        <button id="switchBtn" title="Flip between front and back cameras">Switch Camera</button>
+        <button id="colorBtn" title="Cycle through palette colors">Next Color</button>
+        <button id="downloadPhoto" title="Save current frame">Download Photo</button>
+          <button id="fullscreenBtn" title="Open full screen mode">Full Screen</button>
+          <select id="overlaySelect" title="Choose an overlay for the camera feed">
             <option value="none">No Overlay</option>
             <option value="text">Typography Text</option>
             <option value="logo1">Logo 1</option>
             <option value="logo2">Logo 2</option>
             <option value="logo3">Logo 3</option>
           </select>
-          <input id="captionInput" type="text" placeholder="Caption" style="display:none" />
-          <input id="captionColor" type="color" value="#ffffff" style="display:none" />
+          <input id="captionInput" type="text" placeholder="Caption" style="display:none" title="Overlay caption" />
+          <input id="captionColor" type="color" value="#ffffff" style="display:none" title="Caption color" />
         </div>
       <p id="suggestion">Camera inactive.</p>
       <div id="combos" class="swatches"></div>
@@ -524,7 +526,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   </section>
 
   <section id="exports" class="card" style="margin-top:22px">
-    <h3 class="section">Exports</h3>
+    <h3 class="section" title="Download high-res logos">Exports</h3>
     <p>Upload your approved logo (SVG or PNG) and click <strong>Download PNG</strong> to export a high‑res transparent PNG of the centered logo (3000×3000). If you only have an <strong>.ai</strong> file, export it to <em>SVG</em> or <em>PNG</em> first, then upload here.</p>
     <div style="font-size:12px; color:#666">Note: Export uses client‑side canvas for transparency and crisp edges.</div>
   </section>
@@ -874,7 +876,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   ];
   const colors=['#2c6fb1','#6fb1ff','#1d3f73','#de9146','#111111','#dbb5c2','#efe5d7','#ebe9d5','#f3f0ec'];
   let idx=0; let currentColor='#f3f0ec';
-  let userMedia=null;
+  let userMedia=null; let showLogo=true;
   const imgs=document.querySelectorAll('#logoTemplates .template-img');
   const canvases=document.querySelectorAll('#logoTemplates .canvas');
   const texts=document.querySelectorAll('#logoTemplates .template-text');
@@ -884,6 +886,8 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   const textInput=document.getElementById('templateText');
   const fontSel=document.getElementById('templateFont');
   const posSel=document.getElementById('templateLogoPos');
+  const removeBtn=document.getElementById('removeMedia');
+  const toggleBtn=document.getElementById('toggleLogo');
   let logoPos='center';
 
   function fitText(el){
@@ -913,7 +917,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   });
 
   function render(){
-    imgs.forEach(img=>{ img.src=logos[idx]; });
+    imgs.forEach(img=>{ if(showLogo){ img.src=logos[idx]; img.style.display='block'; } else { img.style.display='none'; }});
     canvases.forEach(cv=>{
       cv.style.background=currentColor;
       cv.classList.remove('logo-center','logo-top','logo-bottom','logo-left','logo-right');
@@ -924,7 +928,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
         const clone=userMedia.cloneNode(true);
         clone.classList.add('user-media');
         if(clone.tagName==='VIDEO'){
-          clone.loop=true; clone.muted=true; clone.playsInline=true; clone.play();
+          clone.loop=true; clone.muted=true; clone.playsInline=true; clone.src=userMedia.src; clone.load(); clone.play();
         }
         cv.prepend(clone);
       }
@@ -934,6 +938,8 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   }
 
   document.getElementById('cycleLogo')?.addEventListener('click',()=>{ idx=(idx+1)%logos.length; render(); });
+  toggleBtn?.addEventListener('click',()=>{ showLogo=!showLogo; toggleBtn.textContent=showLogo?'Hide Logo':'Show Logo'; render(); });
+  removeBtn?.addEventListener('click',()=>{ userMedia=null; upload.value=''; render(); });
   textInput?.addEventListener('input',render);
   fontSel?.addEventListener('change',render);
   posSel?.addEventListener('change',()=>{ logoPos=posSel.value; render(); });
@@ -979,44 +985,58 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 
     const pos=posSel.value;
     const text=textInput.value.trim();
-    const logo=new Image();
-    logo.crossOrigin='anonymous';
-    logo.onload=()=>{
-      let lw=pos==='center'? w*0.6 : w*0.25;
-      if(pos==='top'||pos==='bottom') lw=w*0.3;
-      const lh=lw*logo.height/logo.width;
-      let lx,ly;
-      switch(pos){
-        case 'center': lx=(w-lw)/2; ly=(h-lh)/2; break;
-        case 'top': lx=(w-lw)/2; ly=40; break;
-        case 'bottom': lx=(w-lw)/2; ly=h-lh-40; break;
-        case 'left': lx=40; ly=(h-lh)/2; break;
-        case 'right': lx=w-lw-40; ly=(h-lh)/2; break;
-      }
+    if(showLogo){
+      const logo=new Image();
+      logo.crossOrigin='anonymous';
+      logo.onload=()=>{
+        let lw=pos==='center'? w*0.6 : w*0.25;
+        if(pos==='top'||pos==='bottom') lw=w*0.3;
+        const lh=lw*logo.height/logo.width;
+        let lx,ly;
+        switch(pos){
+          case 'center': lx=(w-lw)/2; ly=(h-lh)/2; break;
+          case 'top': lx=(w-lw)/2; ly=40; break;
+          case 'bottom': lx=(w-lw)/2; ly=h-lh-40; break;
+          case 'left': lx=40; ly=(h-lh)/2; break;
+          case 'right': lx=w-lw-40; ly=(h-lh)/2; break;
+        }
 
-      let maxWidth=(pos==='left'||pos==='right')? w-lw-120 : w*0.9;
+        let maxWidth=(pos==='left'||pos==='right')? w-lw-120 : w*0.9;
+        let fontSize=w/10;
+        ctx.font=`${fontSize}px ${fontSel.value}`;
+        while(text && ctx.measureText(text).width>maxWidth && fontSize>20){
+          fontSize-=2;
+          ctx.font=`${fontSize}px ${fontSel.value}`;
+        }
+        let textX=w/2, textY=h-40, textAlign='center', textBaseline='bottom';
+        switch(pos){
+          case 'bottom': textY=40+fontSize; textBaseline='top'; break;
+          case 'left': textAlign='left'; textBaseline='middle'; textX=lx+lw+40; textY=h/2; break;
+          case 'right': textAlign='right'; textBaseline='middle'; textX=lx-40; textY=h/2; break;
+        }
+        if(text){
+          ctx.fillStyle='#fff';
+          ctx.textAlign=textAlign;
+          ctx.textBaseline=textBaseline;
+          ctx.fillText(text,textX,textY);
+        }
+        ctx.drawImage(logo,lx,ly,lw,lh);
+        canvas.toBlob(b=>{const a=document.createElement('a');a.download=`AGLM_${type}.png`;a.href=URL.createObjectURL(b);a.click();URL.revokeObjectURL(a.href);});
+      };
+      logo.src=logos[idx];
+    }else{
       let fontSize=w/10;
       ctx.font=`${fontSize}px ${fontSel.value}`;
-      while(text && ctx.measureText(text).width>maxWidth && fontSize>20){
+      while(text && ctx.measureText(text).width>w*0.9 && fontSize>20){
         fontSize-=2;
         ctx.font=`${fontSize}px ${fontSel.value}`;
       }
-      let textX=w/2, textY=h-40, textAlign='center', textBaseline='bottom';
-      switch(pos){
-        case 'bottom': textY=40+fontSize; textBaseline='top'; break;
-        case 'left': textAlign='left'; textBaseline='middle'; textX=lx+lw+40; textY=h/2; break;
-        case 'right': textAlign='right'; textBaseline='middle'; textX=lx-40; textY=h/2; break;
-      }
-      if(text){
-        ctx.fillStyle='#fff';
-        ctx.textAlign=textAlign;
-        ctx.textBaseline=textBaseline;
-        ctx.fillText(text,textX,textY);
-      }
-      ctx.drawImage(logo,lx,ly,lw,lh);
+      ctx.fillStyle='#fff';
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      if(text) ctx.fillText(text,w/2,h/2);
       canvas.toBlob(b=>{const a=document.createElement('a');a.download=`AGLM_${type}.png`;a.href=URL.createObjectURL(b);a.click();URL.revokeObjectURL(a.href);});
-    };
-    logo.src=logos[idx];
+    }
   }
 
   document.querySelectorAll('.download').forEach(btn=>btn.addEventListener('click',()=>download(btn.dataset.size)));
