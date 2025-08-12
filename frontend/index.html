@@ -62,7 +62,9 @@ img{max-width:100%;height:auto}
   box-shadow:0 0 0 6px color-mix(in srgb, var(--blue1) 12%, transparent);
 }
 /* Title readability (no condensation) */
-.brand h1{ font-family:'Sora', sans-serif; font-weight:400; font-size:48px; margin:0; letter-spacing:.01em; line-height:1.2 }
+.brand h1{ font-weight:400; font-size:48px; margin:0; letter-spacing:.01em; line-height:1.2 }
+.brand h1 .modak{font-family:'Modak', cursive;}
+.brand h1 .sora{font-family:'Sora', sans-serif;}
 @media(max-width:700px){ .brand h1{ font-size:32px } }
 
 .header nav{display:flex; gap:14px; flex-wrap:wrap}
@@ -89,6 +91,18 @@ img{max-width:100%;height:auto}
 .sprite .wing{ animation:flap var(--flap,1200ms) ease-in-out infinite; }
 @keyframes flap{ 0%,100%{ transform:rotate(0) } 50%{ transform:rotate(var(--arc,14deg)) } }
 @keyframes floatY{ 0%,100%{ transform:translateY(-6px) rotate(var(--start,0deg)) } 50%{ transform:translateY(6px) rotate(var(--end,-2deg)) } }
+
+/* Global flock sprites */
+.flock-layer{position:fixed;inset:0;pointer-events:none;z-index:1000}
+.flock{position:absolute;width:clamp(18px,2vw,28px);opacity:0;transform-origin:50% 70%;filter:drop-shadow(0 1px 0 rgba(0,0,0,.12));}
+.flock svg{display:block;width:100%;height:auto}
+.flock .wing{animation:flap var(--flap,460ms) ease-in-out infinite}
+.flock.fly{animation:flight var(--dur,2800ms) cubic-bezier(.2,.6,.1,1) forwards}
+@keyframes flight{
+ 0%{opacity:0;transform:translate(var(--x,0),var(--y,0)) rotate(var(--r0,0deg)) scale(var(--s,1))}
+ 8%{opacity:1}
+ 100%{opacity:0;transform:translate(calc(var(--x) + var(--dx,0)), calc(var(--y) + var(--dy,0))) rotate(var(--r1,-20deg)) scale(calc(var(--s,1)*.8))}
+}
 
 /* Logo stage */
 .stage{ position:relative; display:grid; place-items:center; aspect-ratio:1/1; background:var(--neutral3); border-radius:20px; overflow:hidden; }
@@ -127,6 +141,13 @@ button.secondary{ background:#fff; color:var(--ink); border:1px solid color-mix(
 .sample .cap{ font-size:12px; color:#666; margin-bottom:6px }
 .sample .text{ font-size:28px; }
 
+/* Typography generator */
+.type-tool{margin-top:20px;}
+.type-tool textarea{width:100%;min-height:80px;padding:10px;border-radius:8px;border:1px solid #ccc;font-family:'Sora',sans-serif;font-size:16px}
+.type-tool .controls{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.type-tool canvas{display:none}
+.type-tool .canvas{margin-top:10px;background:#fff;box-shadow:var(--shadow);width:100%;max-width:400px;height:400px;background-size:cover;background-position:center;border-radius:12px}
+
 /* Social templates */
 .templates{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:14px }
 .frame{ background:var(--card); border-radius:18px; padding:12px; box-shadow:var(--shadow) }
@@ -155,7 +176,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   <header class="header">
     <div class="brand">
       <div class="dot"></div>
-      <h1>A GRIEF LIKE MINE — Brand Kit</h1>
+      <h1><span class="modak">A GRIEF LIKE MINE</span><span class="sora"> — Brand Kit</span></h1>
     </div>
     <nav>
       <a href="#overview">Overview</a>
@@ -210,7 +231,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
         <div class="stage" style="aspect-ratio:1/1; background:#111" id="logoDark">
           <img id="logoDarkIMG" src="https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png" alt="Logo on dark"/>
           <a id="logoDarkLink" class="fullscreen-link" href="https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png" aria-label="Open full image"></a>
-          <a id="logoDarkLink" class="fullscreen-link" href="https://i.ibb.co/mCGyLQ0D/A-Grief-Like-Mine-1x1-center-transparent.png" target="_blank" aria-label="Open full image"></a>
+          <a id="logoDarkLink" class="fullscreen-link" href="https://i.ibb.co/mCGyLQ0D/A-Grief-Like-Mine-1x1-center-transparent.png" aria-label="Open full image"></a>
         </div>
       </div>
     </div>
@@ -254,6 +275,40 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
         <div class="cap">Body & UI — Sora</div>
         <div class="text" style="font-family:'Sora', sans-serif; font-weight:500;">The sea remembers. We move gently, not swiftly.</div>
       </div>
+    </div>
+
+    <div class="type-tool">
+      <textarea id="typeInput" placeholder="Write a quote..."></textarea>
+      <div class="controls">
+        <label>Font
+          <select id="fontSelect">
+            <option value="Sora">Sora</option>
+            <option value="Modak">Modak</option>
+          </select>
+        </label>
+        <label>Logo position
+          <select id="logoPos">
+            <option value="none">None</option>
+            <option value="bottom-right">Bottom Right</option>
+            <option value="bottom-left">Bottom Left</option>
+            <option value="top-right">Top Right</option>
+            <option value="top-left">Top Left</option>
+            <option value="top-center">Top Center</option>
+            <option value="bottom-center">Bottom Center</option>
+          </select>
+        </label>
+        <button id="downloadPNG" class="btn secondary">Download PNG</button>
+      </div>
+      <canvas id="typeCanvas" width="3000" height="3000"></canvas>
+      <div id="typePreview" class="canvas square"><div class="ghost">Preview</div></div>
+    </div>
+  </section>
+
+  <section id="kinetic" class="card" style="margin-top:22px">
+    <h3 class="section">Kinetic Typography</h3>
+    <div class="stage">
+      <img src="https://i.ibb.co/rGKS5vTC/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered.png" alt="Kinetic Typography" style="width:80%;height:auto"/>
+      <a class="fullscreen-link" href="https://i.ibb.co/rGKS5vTC/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered.png" aria-label="Open full image"></a>
     </div>
   </section>
 
@@ -332,6 +387,11 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   <img id="usageLogo" class="usage-logo" alt="Usage logo" src="https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png">
 </div>
 
+<div id="logoModal" class="color-modal" aria-hidden="true">
+  <button class="close-modal" aria-label="Close">↙</button>
+  <img id="logoModalImg" class="usage-logo" alt="Full logo">
+</div>
+
 <script>
 // Color swatch modal
 (function(){
@@ -378,6 +438,24 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});
 })();
 
+// Logo fullscreen modal
+(function(){
+  const modal=document.getElementById('logoModal');
+  const img=modal.querySelector('#logoModalImg');
+  const close=modal.querySelector('.close-modal');
+  function hide(){modal.style.display='none';img.src='';}
+  document.querySelectorAll('.fullscreen-link').forEach(link=>{
+    link.addEventListener('click',e=>{
+      e.preventDefault();
+      img.src=link.href;
+      modal.style.display='flex';
+    });
+  });
+  close.addEventListener('click',hide);
+  modal.addEventListener('click',e=>{if(e.target===modal)hide();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});
+})();
+
 // Idle-only floating sprites in the hero
 (function(){
   const particles = document.getElementById('particles');
@@ -410,6 +488,36 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   // a couple floating friends
   spawn('bird'); spawn('butter');
   setTimeout(()=> spawn('butter'), 600);
+})();
+
+// Global flock following cursor
+(function(){
+  const layer=document.createElement('div');
+  layer.className='flock-layer';
+  document.body.appendChild(layer);
+  const rand=(a,b)=>a+Math.random()*(b-a);
+  const kinds=['BIRD_RIG','BUTTER_RIG'];
+  function make(x,y,kind){
+    const el=document.createElement('div');
+    el.className='flock';
+    el.style.setProperty('--x',x+'px');
+    el.style.setProperty('--y',y+'px');
+    el.style.setProperty('--dx',rand(-180,180)+'px');
+    el.style.setProperty('--dy',rand(-260,-120)+'px');
+    el.style.setProperty('--r0',rand(-22,22)+'deg');
+    el.style.setProperty('--r1',rand(-28,8)+'deg');
+    el.style.setProperty('--s',rand(0.8,1.2));
+    el.style.setProperty('--dur',rand(2200,3400)+'ms');
+    el.style.setProperty('--flap',rand(420,980)+'ms');
+    el.innerHTML=`<svg viewBox="0 0 100 80" width="100%" height="100%"><use href="#${kind}"/></svg>`;
+    layer.appendChild(el);
+    requestAnimationFrame(()=>el.classList.add('fly'));
+    el.addEventListener('animationend',()=>el.remove(),{once:true});
+  }
+  function flock(x,y,count=14){ for(let i=0;i<count;i++) make(x,y,kinds[Math.floor(Math.random()*kinds.length)]); }
+  let last=0;
+  document.addEventListener('mousemove',e=>{const now=Date.now(); if(now-last>200){last=now; make(e.clientX,e.clientY,kinds[Math.floor(Math.random()*kinds.length)]);} });
+  document.addEventListener('click',e=>flock(e.clientX,e.clientY,16));
 })();
 
 // Logo upload & previews
@@ -517,6 +625,51 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 
   btn?.addEventListener('click', exportPNG);
   toggle?.addEventListener('click', toggleBG);
+})();
+
+// Typography generator
+(function(){
+  const input=document.getElementById('typeInput');
+  const fontSel=document.getElementById('fontSelect');
+  const posSel=document.getElementById('logoPos');
+  const canvas=document.getElementById('typeCanvas');
+  const ctx=canvas.getContext('2d');
+  const preview=document.getElementById('typePreview');
+  const btn=document.getElementById('downloadPNG');
+  const logo=new Image();
+  logo.crossOrigin='anonymous';
+  logo.src='https://i.ibb.co/N2Lr6c4s/A-Grief-Like-Mine-1x1-center.png';
+
+  function render(){
+    ctx.clearRect(0,0,3000,3000);
+    ctx.fillStyle='#f3f0ec';
+    ctx.fillRect(0,0,3000,3000);
+    ctx.fillStyle='#111';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.font='120px '+fontSel.value;
+    const lines=input.value.split('\n');
+    const lh=150;
+    lines.forEach((line,i)=>ctx.fillText(line,1500,1400 + i*lh));
+    const pos=posSel.value;
+    const size=300;
+    const map={
+      'bottom-right':[3000-size-50,3000-size-50],
+      'bottom-left':[50,3000-size-50],
+      'top-right':[3000-size-50,50],
+      'top-left':[50,50],
+      'top-center':[(3000-size)/2,50],
+      'bottom-center':[(3000-size)/2,3000-size-50]
+    };
+    if(map[pos]) ctx.drawImage(logo,map[pos][0],map[pos][1],size,size);
+    const url=canvas.toDataURL('image/png');
+    preview.style.backgroundImage=`url(${url})`;
+    preview.style.backgroundSize='cover';
+    return url;
+  }
+  [input,fontSel,posSel].forEach(el=>el?.addEventListener('input',render));
+  btn?.addEventListener('click',()=>{const url=render();const a=document.createElement('a');a.href=url;a.download='typography.png';a.click();});
+  render();
 })();
 
 // Social template logo cycling & downloads
