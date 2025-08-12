@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Photo Color Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Modak&family=Sora:wght@300..800&display=swap" rel="stylesheet">
+  <style>
+    body{margin:0;padding:20px;font-family:'Sora',sans-serif;background:#f7f6f3;color:#111;}
+    header a{text-decoration:none;color:#111;}
+    h2{font-weight:500;}
+    video{width:100%;max-width:480px;border-radius:16px;background:#000;}
+    .controls{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;}
+    button{padding:8px 12px;border:none;border-radius:8px;background:#2c6fb1;color:#fff;font-weight:500;cursor:pointer;}
+    button:hover{background:#6fb1ff;color:#111;}
+    #suggestion{margin-top:14px;font-size:18px;font-weight:600;}
+    .swatches{display:flex;gap:10px;margin-top:10px;}
+    .swatch{width:40px;height:40px;border-radius:8px;box-shadow:0 0 0 2px rgba(0,0,0,.1);}
+  </style>
+</head>
+<body>
+  <header><a href="index.html">← Back to Brand Kit</a></header>
+  <h2>Photo Color Guide</h2>
+  <video id="video" autoplay playsinline></video>
+  <canvas id="canvas" width="200" height="150" style="display:none"></canvas>
+  <div class="controls">
+    <button id="filterBtn">Next Filter</button>
+    <button id="comboBtn">Suggest Color Combos</button>
+  </div>
+  <p id="suggestion">Allow camera access to begin.</p>
+  <div id="combos" class="swatches"></div>
+  <script src="photo-guide.js"></script>
+</body>
+</html>
