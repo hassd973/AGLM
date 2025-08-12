@@ -30,8 +30,9 @@
   /* --- rig & typography dynamics --- */
   #A_GRIEF_LIKE_MINE, #A_GRIEF_LIKE_MINE * { transform-box: fill-box; }
   .glyph { transform-box: fill-box; transform-origin:50% 100%; will-change:transform;
-           transition:filter .25s ease; transform:rotate(var(--windX)) skewY(var(--windY)); }
-  .glyph.react { transform:rotate(var(--windX)) skewY(var(--windY)) translateY(-2px) scale(1.02);
+           transition:transform .25s ease, filter .25s ease;
+           transform:rotate(calc(var(--windX)*1.2)) skewY(calc(var(--windY)*1.5)); }
+  .glyph.react { transform:rotate(calc(var(--windX)*1.2)) skewY(calc(var(--windY)*1.5)) scale(1.02);
                  filter:drop-shadow(0 2px 0 rgba(0,0,0,.1)); }
 
   /* overlay perches for rigged creatures */
@@ -627,8 +628,8 @@
   // gentle wind based on mouse movement
   let windScale = 1, targetX = 0, targetY = 0, windX = 0, windY = 0;
   wrap.addEventListener('mousemove', e=>{
-    targetX = e.movementX * 0.2 * windScale;
-    targetY = e.movementY * -0.2 * windScale;
+    targetX = e.movementX * 0.3 * windScale;
+    targetY = e.movementY * -0.3 * windScale;
   });
   (function windLoop(){
     windX += (targetX - windX)*0.08;
@@ -647,8 +648,8 @@
   wrap.appendChild(follow);
   let fbX=0,fbY=0,fbTX=0,fbTY=0;
   function followLoop(){
-    fbX+=(fbTX-fbX)*0.15;
-    fbY+=(fbTY-fbY)*0.15;
+    fbX+=(fbTX-fbX)*0.1;
+    fbY+=(fbTY-fbY)*0.1;
     follow.style.transform=`translate(${fbX-20}px,${fbY-16}px)`;
     requestAnimationFrame(followLoop);
   }

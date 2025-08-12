@@ -176,7 +176,12 @@ button.secondary{ background:#fff; color:var(--ink); border:1px solid color-mix(
 .canvas.landscape{ aspect-ratio:16/9 }
 .canvas .ghost{ opacity:.22; font-family:'Modak', cursive; letter-spacing:.04em }
 .canvas img{ max-width:80%; max-height:80%; width:auto; height:auto; object-fit:contain; object-position:center; }
-.canvas.landscape .template-img{ max-width:none; max-height:100%; width:auto; height:100%; }
+.canvas.landscape .template-img{
+  max-width:100%;
+  max-height:100%;
+  width:auto;
+  height:auto;
+}
 .canvas video{ max-width:80%; max-height:80%; width:auto; height:auto; object-fit:contain; object-position:center; }
 #photoExample .canvas img,
 #photoExample .canvas video{
@@ -208,12 +213,12 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 #photoTool #suggestion{margin-top:14px;font-size:18px;font-weight:600;}
 #photoTool .swatches{display:flex;gap:10px;margin-top:10px;}
 #photoTool .swatch{width:40px;height:40px;border-radius:8px;box-shadow:0 0 0 2px rgba(0,0,0,.1);}
-#photoTool .overlay{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);color:#fff;font-size:24px;text-align:center;pointer-events:none;}
+#photoTool .overlay{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);color:#fff;font-size:24px;text-align:center;pointer-events:none;z-index:2;}
 #photoTool #overlayLogo{width:120px;height:auto;}
-#photoTool #colorOverlay{position:absolute;inset:0;pointer-events:none;display:none;opacity:.3;}
+#photoTool #colorOverlay{position:absolute;inset:0;pointer-events:none;display:none;opacity:.3;z-index:1;}
 #photoTool.fullscreen{position:fixed;inset:0;background:#000;z-index:1000;padding:0;}
 #photoTool.fullscreen video{width:100%;height:100%;object-fit:cover;}
-#photoTool .fs-controls{display:none;position:absolute;top:10px;left:10px;gap:8px;align-items:center;}
+#photoTool .fs-controls{display:none;position:absolute;top:10px;right:10px;left:auto;gap:8px;align-items:center;}
 #photoTool.fullscreen .fs-controls{display:flex;}
 #photoTool .fs-controls .swatch{width:30px;height:30px;border-radius:50%;cursor:pointer;box-shadow:0 0 0 2px rgba(0,0,0,.2);}
 #photoTool .fs-controls .capture{margin-left:10px;background:rgba(0,0,0,.4);color:#fff;border:0;border-radius:50%;width:30px;height:30px;cursor:pointer;}
@@ -875,7 +880,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     img.onload=()=>{
       let scale;
       if(type==='landscape'){
-        scale=Math.min(h/img.height,1);
+        scale=Math.min(1, w/img.width, h/img.height);
       }else{
         scale=Math.min((w*0.8)/img.width,(h*0.8)/img.height);
       }
