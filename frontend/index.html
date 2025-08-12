@@ -473,9 +473,11 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     updateLogo();
   });
 
-  document.querySelectorAll('.swatch').forEach(sw=>{
+  document.querySelectorAll('#colors .swatch').forEach(sw=>{
     sw.addEventListener('click',()=>{
-      const color=getComputedStyle(sw.querySelector('.chip')).backgroundColor;
+      const chip=sw.querySelector('.chip');
+      if(!chip) return;
+      const color=getComputedStyle(chip).backgroundColor;
       modal.style.background=color;
       modal.style.display='flex';
     });
