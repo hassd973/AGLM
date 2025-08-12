@@ -171,7 +171,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 .drop{ display:inline-block; padding:8px 10px; border:1px dashed color-mix(in srgb, var(--ink) 25%, transparent); border-radius:10px; font-size:12px; color:#555 }
 
 /* Photo tool */
-#photoTool{margin-top:20px;}
+#photoTool{margin-top:20px;position:relative;}
 #photoTool video{width:100%;max-width:480px;border-radius:16px;background:#000;}
 #photoTool .controls{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;}
 #photoTool button{padding:8px 12px;border:none;border-radius:8px;background:var(--blue1);color:#fff;font-weight:500;cursor:pointer;}
@@ -179,6 +179,15 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 #photoTool #suggestion{margin-top:14px;font-size:18px;font-weight:600;}
 #photoTool .swatches{display:flex;gap:10px;margin-top:10px;}
 #photoTool .swatch{width:40px;height:40px;border-radius:8px;box-shadow:0 0 0 2px rgba(0,0,0,.1);}
+#photoTool .overlay{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);color:#fff;font-size:24px;text-align:center;pointer-events:none;}
+#photoTool #overlayLogo{width:120px;height:auto;}
+#photoTool #colorOverlay{position:absolute;inset:0;pointer-events:none;display:none;opacity:.3;}
+#photoTool.fullscreen{position:fixed;inset:0;background:#000;z-index:1000;padding:0;}
+#photoTool.fullscreen video{width:100%;height:100%;object-fit:cover;}
+#photoTool .fs-controls{display:none;position:absolute;top:10px;left:10px;gap:8px;align-items:center;}
+#photoTool.fullscreen .fs-controls{display:flex;}
+#photoTool .fs-controls .swatch{width:30px;height:30px;border-radius:50%;cursor:pointer;box-shadow:0 0 0 2px rgba(0,0,0,.2);}
+#photoTool .fs-controls .exit{margin-left:10px;background:rgba(0,0,0,.4);color:#fff;border:0;border-radius:50%;width:30px;height:30px;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -366,13 +375,34 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       <li>Negative space for type; keep horizon lines calm.</li>
     </ul>
     <div id="photoTool">
-      <video id="video" autoplay playsinline></video>
+      <video id="video" playsinline></video>
       <canvas id="canvas" width="200" height="150" style="display:none"></canvas>
+      <div id="overlayText" class="overlay" style="display:none"></div>
+      <img id="overlayLogo" class="overlay" alt="Overlay logo" style="display:none"/>
+      <div id="colorOverlay"></div>
+      <div id="fsControls" class="fs-controls">
+        <div class="swatch" data-color="#2c6fb1"></div>
+        <div class="swatch" data-color="#6fb1ff"></div>
+        <div class="swatch" data-color="#de9146"></div>
+        <button id="exitFs" class="exit">↩</button>
+      </div>
       <div class="controls">
+        <button id="startBtn">Activate Camera</button>
+        <button id="stopBtn">Deactivate Camera</button>
+        <button id="switchBtn">Switch Camera</button>
         <button id="filterBtn">Next Filter</button>
         <button id="comboBtn">Suggest Color Combos</button>
+        <button id="downloadPhoto">Download Photo</button>
+        <button id="fullscreenBtn">Full Screen</button>
+        <select id="overlaySelect">
+          <option value="none">No Overlay</option>
+          <option value="text">Typography Text</option>
+          <option value="logo1">Logo 1</option>
+          <option value="logo2">Logo 2</option>
+          <option value="logo3">Logo 3</option>
+        </select>
       </div>
-      <p id="suggestion">Allow camera access to begin.</p>
+      <p id="suggestion">Camera inactive.</p>
       <div id="combos" class="swatches"></div>
     </div>
   </section>
@@ -743,7 +773,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   document.querySelectorAll('.download').forEach(btn=>btn.addEventListener('click',()=>download(btn.dataset.size)));
 })();
 
-// Live photo color guide
+// Live photo color guide with camera controls
 (function(){
   const video=document.getElementById('video');
   if(!video) return;
@@ -751,9 +781,27 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   const ctx=canvas.getContext('2d');
   const suggestion=document.getElementById('suggestion');
   const combos=document.getElementById('combos');
+  const filterBtn=document.getElementById('filterBtn');
+  const comboBtn=document.getElementById('comboBtn');
+  const startBtn=document.getElementById('startBtn');
+  const stopBtn=document.getElementById('stopBtn');
+  const switchBtn=document.getElementById('switchBtn');
+  const downloadBtn=document.getElementById('downloadPhoto');
+  const fullscreenBtn=document.getElementById('fullscreenBtn');
+  const overlaySelect=document.getElementById('overlaySelect');
+  const overlayText=document.getElementById('overlayText');
+  const overlayLogo=document.getElementById('overlayLogo');
+  const colorOverlay=document.getElementById('colorOverlay');
+  const fsControls=document.getElementById('fsControls');
+  const exitFs=document.getElementById('exitFs');
   const palette=['#2c6fb1','#6fb1ff','#1d3f73','#de9146','#111111','#dbb5c2','#efe5d7','#ebe9d5','#f3f0ec'];
   const filters=['none','grayscale(100%)','sepia(60%)','contrast(160%)','brightness(120%)'];
+  const logos={logo1:'assets/logo-top-1.svg',logo2:'assets/logo-top-2.svg',logo3:'assets/logo-top-3.svg'};
   let filterIndex=0;
+  let stream=null;
+  let facing='environment';
+  let analyzing=false;
+  let overlayType='none';
 
   function luminance(hex){
     const r=parseInt(hex.substr(1,2),16)/255;
@@ -763,6 +811,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   }
 
   function analyze(){
+    if(!analyzing) return;
     if(video.readyState>=2){
       ctx.drawImage(video,0,0,canvas.width,canvas.height);
       const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
@@ -782,10 +831,24 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     requestAnimationFrame(analyze);
   }
 
-  navigator.mediaDevices.getUserMedia({video:true}).then(stream=>{
-    video.srcObject=stream;
-    requestAnimationFrame(analyze);
-  }).catch(()=>{ suggestion.textContent='Camera access is required.'; });
+  async function startCamera(){
+    try{
+      if(stream) stream.getTracks().forEach(t=>t.stop());
+      stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing}});
+      video.srcObject=stream;
+      analyzing=true;
+      requestAnimationFrame(analyze);
+      suggestion.textContent='';
+    }catch(e){
+      suggestion.textContent='Camera access is required.';
+    }
+  }
+
+  function stopCamera(){
+    if(stream){stream.getTracks().forEach(t=>t.stop());}
+    stream=null; analyzing=false; video.srcObject=null;
+    suggestion.textContent='Camera inactive.';
+  }
 
   function colorDistance(c,r,g,b){
     const R=parseInt(c.substr(1,2),16);
@@ -794,12 +857,13 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     return Math.sqrt((R-r)**2 + (G-g)**2 + (B-b)**2);
   }
 
-  document.getElementById('filterBtn').addEventListener('click',()=>{
+  filterBtn?.addEventListener('click',()=>{
     filterIndex=(filterIndex+1)%filters.length;
     video.style.filter=filters[filterIndex];
   });
 
-  document.getElementById('comboBtn').addEventListener('click',()=>{
+  comboBtn?.addEventListener('click',()=>{
+    if(!stream) return;
     ctx.drawImage(video,0,0,canvas.width,canvas.height);
     const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
     let r=0,g=0,b=0;
@@ -813,6 +877,69 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       div.className='swatch';
       div.style.background=c;
       combos.appendChild(div);
+    });
+  });
+
+  startBtn?.addEventListener('click',startCamera);
+  stopBtn?.addEventListener('click',stopCamera);
+  switchBtn?.addEventListener('click',()=>{facing=facing==='user'?'environment':'user';startCamera();});
+
+  overlaySelect?.addEventListener('change',()=>{
+    overlayType=overlaySelect.value;
+    overlayText.style.display='none';
+    overlayLogo.style.display='none';
+    if(overlayType==='text'){
+      overlayText.textContent=document.getElementById('typeInput')?.value||'';
+      overlayText.style.display='block';
+    }else if(logos[overlayType]){
+      overlayLogo.src=logos[overlayType];
+      overlayLogo.style.display='block';
+    }
+  });
+
+  document.getElementById('typeInput')?.addEventListener('input',e=>{
+    if(overlayType==='text') overlayText.textContent=e.target.value;
+  });
+
+  downloadBtn?.addEventListener('click',()=>{
+    if(!stream) return;
+    const w=video.videoWidth; const h=video.videoHeight;
+    canvas.width=w; canvas.height=h;
+    ctx.drawImage(video,0,0,w,h);
+    if(overlayType==='text' && overlayText.textContent){
+      ctx.font='40px Sora';
+      ctx.fillStyle='#fff';
+      ctx.textAlign='center';
+      const lines=overlayText.textContent.split('\n');
+      lines.forEach((line,i)=>ctx.fillText(line,w/2,h-60-(lines.length-1-i)*44));
+    }else if(logos[overlayType] && overlayLogo.complete){
+      const ow=overlayLogo.naturalWidth,oh=overlayLogo.naturalHeight;
+      const scale=120/ow; const lw=ow*scale, lh=oh*scale;
+      ctx.drawImage(overlayLogo,(w-lw)/2,h-lh-20,lw,lh);
+    }
+    const a=document.createElement('a');
+    a.download='photo.png';
+    a.href=canvas.toDataURL('image/png');
+    a.click();
+  });
+
+  fullscreenBtn?.addEventListener('click',()=>{document.getElementById('photoTool').requestFullscreen();});
+  exitFs?.addEventListener('click',()=>{document.exitFullscreen();});
+
+  document.addEventListener('fullscreenchange',()=>{
+    const pt=document.getElementById('photoTool');
+    if(document.fullscreenElement===pt){
+      pt.classList.add('fullscreen');
+    }else{
+      pt.classList.remove('fullscreen');
+      colorOverlay.style.display='none';
+    }
+  });
+
+  fsControls?.querySelectorAll('.swatch').forEach(sw=>{
+    sw.addEventListener('click',()=>{
+      colorOverlay.style.background=sw.dataset.color;
+      colorOverlay.style.display='block';
     });
   });
 })();
