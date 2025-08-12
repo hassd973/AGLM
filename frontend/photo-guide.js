@@ -40,6 +40,7 @@ function analyze(){
 
 navigator.mediaDevices.getUserMedia({video:true}).then(stream=>{
   video.srcObject = stream;
+  video.play();
   requestAnimationFrame(analyze);
 }).catch(err=>{
   suggestion.textContent = 'Camera access is required.';

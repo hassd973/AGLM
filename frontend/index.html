@@ -40,6 +40,13 @@
   --primaryHover: color-mix(in srgb, var(--blue1) 80%, var(--blue2));
 }
 
+body.dark{
+  --bg:#111111;
+  --ink:#f3f0ec;
+  --card:#1d1d1d;
+  --muted:#bbbbbb;
+}
+
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
@@ -62,7 +69,11 @@ img{max-width:100%;height:auto}
   box-shadow:0 0 0 6px color-mix(in srgb, var(--blue1) 12%, transparent);
 }
 /* Title readability (no condensation) */
-.brand h1{ font-weight:400; font-size:48px; margin:0; letter-spacing:.01em; line-height:1.2; text-align:left }
+.brand h1{ font-weight:400; font-size:48px; margin:0; letter-spacing:.01em; line-height:1.2; text-align:left; cursor:pointer }
+.brand h1 #titleText{transition:opacity .4s}
+.brand h1 #titleText.hidden{opacity:0}
+.brand h1 #titleLogo{height:60px;display:none;opacity:0;transition:opacity .4s;vertical-align:middle}
+.brand h1 #titleLogo.show{display:inline-block;opacity:1}
 .brand h1 .modak{font-family:'Modak', cursive;}
 .brand h1 .sora{font-family:'Sora', sans-serif;}
 @media(max-width:700px){ .brand h1{ font-size:32px } }
@@ -195,7 +206,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   <header class="header">
     <div class="brand">
       <div class="dot"></div>
-      <h1><span class="modak">A GRIEF<br>Like Mine</span><br><span class="sora">— Brand Kit</span></h1>
+      <h1><span class="modak" id="titleText">A GRIEF<br>Like Mine</span><img id="titleLogo" src="assets/logo-top-1.svg" alt="AGLM logo"/><br><span class="sora">— Brand Kit</span></h1>
     </div>
     <nav>
       <a href="#overview">Overview</a>
@@ -206,6 +217,8 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       <a href="#photos">Photo Direction</a>
       <a href="photo-guide.html">Photo Tool</a>
       <a href="#exports">Exports</a>
+      <button id="lightMode" class="btn secondary" type="button">Light</button>
+      <button id="darkMode" class="btn secondary" type="button">Dark</button>
     </nav>
   </header>
 
@@ -250,8 +263,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
         </div>
         <div class="stage" style="aspect-ratio:1/1; background:#111" id="logoDark">
           <img id="logoDarkIMG" src="https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png" alt="Logo on dark"/>
-          <a id="logoDarkLink" class="fullscreen-link" href="https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png" aria-label="Open full image"></a>
-          <a id="logoDarkLink" class="fullscreen-link" href="https://i.ibb.co/mCGyLQ0D/A-Grief-Like-Mine-1x1-center-transparent.png" aria-label="Open full image"></a>
+          <a class="fullscreen-link" data-bg="#000" href="https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png" aria-label="Open full image"></a>
         </div>
       </div>
     </div>
@@ -300,17 +312,20 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     <div class="type-tool">
       <textarea id="typeInput" placeholder="Write a quote..."></textarea>
       <div class="controls">
-        <label>Font
-          <select id="fontSelect">
-            <option value="Sora">Sora</option>
-            <option value="Modak">Modak</option>
-          </select>
-        </label>
-        <label>Logo position
-          <select id="logoPos">
-            <option value="none">None</option>
-            <option value="bottom-right">Bottom Right</option>
-            <option value="bottom-left">Bottom Left</option>
+          <label>Font
+            <select id="fontSelect">
+              <option value="Sora">Sora</option>
+              <option value="Modak">Modak</option>
+            </select>
+          </label>
+          <label>Font size
+            <input id="fontSize" type="number" value="120" min="20" max="300" />
+          </label>
+          <label>Logo position
+            <select id="logoPos">
+              <option value="none">None</option>
+              <option value="bottom-right">Bottom Right</option>
+              <option value="bottom-left">Bottom Left</option>
             <option value="top-right">Top Right</option>
             <option value="top-left">Top Left</option>
             <option value="top-center">Top Center</option>
@@ -393,15 +408,17 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
         <button id="filterBtn">Next Filter</button>
         <button id="comboBtn">Suggest Color Combos</button>
         <button id="downloadPhoto">Download Photo</button>
-        <button id="fullscreenBtn">Full Screen</button>
-        <select id="overlaySelect">
-          <option value="none">No Overlay</option>
-          <option value="text">Typography Text</option>
-          <option value="logo1">Logo 1</option>
-          <option value="logo2">Logo 2</option>
-          <option value="logo3">Logo 3</option>
-        </select>
-      </div>
+          <button id="fullscreenBtn">Full Screen</button>
+          <select id="overlaySelect">
+            <option value="none">No Overlay</option>
+            <option value="text">Typography Text</option>
+            <option value="logo1">Logo 1</option>
+            <option value="logo2">Logo 2</option>
+            <option value="logo3">Logo 3</option>
+          </select>
+          <input id="captionInput" type="text" placeholder="Caption" style="display:none" />
+          <input id="captionColor" type="color" value="#ffffff" style="display:none" />
+        </div>
       <p id="suggestion">Camera inactive.</p>
       <div id="combos" class="swatches"></div>
     </div>
@@ -506,14 +523,15 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   const modal=document.getElementById('logoModal');
   const img=modal.querySelector('#logoModalImg');
   const close=modal.querySelector('.close-modal');
-  function hide(){modal.style.display='none';img.src='';}
-  document.querySelectorAll('.fullscreen-link').forEach(link=>{
-    link.addEventListener('click',e=>{
-      e.preventDefault();
-      img.src=link.href;
-      modal.style.display='flex';
+    function hide(){modal.style.display='none';img.src='';}
+    document.querySelectorAll('.fullscreen-link').forEach(link=>{
+      link.addEventListener('click',e=>{
+        e.preventDefault();
+        img.src=link.href;
+        modal.style.background=link.dataset.bg||'rgba(0,0,0,.8)';
+        modal.style.display='flex';
+      });
     });
-  });
   close.addEventListener('click',hide);
   modal.addEventListener('click',e=>{if(e.target===modal)hide();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});
@@ -691,36 +709,39 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 })();
 
 // Typography generator
-(function(){
-  const input=document.getElementById('typeInput');
-  const fontSel=document.getElementById('fontSelect');
-  const posSel=document.getElementById('logoPos');
-  const bgSel=document.getElementById('bgColor');
-  const nextLogo=document.getElementById('typeNextLogo');
-  const canvas=document.getElementById('typeCanvas');
-  const ctx=canvas.getContext('2d');
-  const preview=document.getElementById('typePreview');
-  const btn=document.getElementById('downloadPNG');
-  const logos=['https://i.ibb.co/N2Lr6c4s/A-Grief-Like-Mine-1x1-center.png','assets/logo-top-1.svg','assets/logo-top-2.svg','assets/logo-top-3.svg'];
-  let lidx=0;
-  const logo=new Image();
-  logo.crossOrigin='anonymous';
-  logo.src=logos[lidx];
+  (function(){
+    const input=document.getElementById('typeInput');
+    const fontSel=document.getElementById('fontSelect');
+    const sizeInput=document.getElementById('fontSize');
+    const posSel=document.getElementById('logoPos');
+    const bgSel=document.getElementById('bgColor');
+    const nextLogo=document.getElementById('typeNextLogo');
+    const canvas=document.getElementById('typeCanvas');
+    const ctx=canvas.getContext('2d');
+    const preview=document.getElementById('typePreview');
+    const btn=document.getElementById('downloadPNG');
+    const logos=['https://i.ibb.co/N2Lr6c4s/A-Grief-Like-Mine-1x1-center.png','assets/logo-top-1.svg','assets/logo-top-2.svg','assets/logo-top-3.svg'];
+    let lidx=0;
+    const logo=new Image();
+    logo.crossOrigin='anonymous';
+    logo.src=logos[lidx];
 
-  function render(){
-    ctx.clearRect(0,0,3000,3000);
-    ctx.fillStyle=bgSel.value;
-    ctx.fillRect(0,0,3000,3000);
-    ctx.fillStyle='#111';
-    ctx.textAlign='center';
-    ctx.textBaseline='middle';
-    ctx.font='120px '+fontSel.value;
-    const lines=input.value.split('\n');
-    const lh=150;
-    lines.forEach((line,i)=>ctx.fillText(line,1500,1400 + i*lh));
-    const pos=posSel.value;
-    const size=300;
-    const map={
+    function render(){
+      ctx.clearRect(0,0,3000,3000);
+      ctx.fillStyle=bgSel.value;
+      ctx.fillRect(0,0,3000,3000);
+      ctx.fillStyle='#111';
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      const fs=parseInt(sizeInput.value,10)||120;
+      ctx.font=fs+'px '+fontSel.value;
+      const lines=input.value.split('\n');
+      const lh=fs*1.25;
+      const start=1500 - ((lines.length-1)/2)*lh;
+      lines.forEach((line,i)=>ctx.fillText(line,1500,start + i*lh));
+      const pos=posSel.value;
+      const size=300;
+      const map={
       'bottom-right':[3000-size-50,3000-size-50],
       'bottom-left':[50,3000-size-50],
       'top-right':[3000-size-50,50],
@@ -734,7 +755,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     preview.style.backgroundSize='cover';
     return url;
   }
-  [input,fontSel,posSel,bgSel].forEach(el=>el?.addEventListener('input',render));
+    [input,fontSel,sizeInput,posSel,bgSel].forEach(el=>el?.addEventListener('input',render));
   nextLogo?.addEventListener('click',()=>{ lidx=(lidx+1)%logos.length; logo.src=logos[lidx]; });
   logo.onload=render;
   btn?.addEventListener('click',()=>{const url=render();const a=document.createElement('a');a.href=url;a.download='typography.png';a.click();});
@@ -788,12 +809,14 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   const switchBtn=document.getElementById('switchBtn');
   const downloadBtn=document.getElementById('downloadPhoto');
   const fullscreenBtn=document.getElementById('fullscreenBtn');
-  const overlaySelect=document.getElementById('overlaySelect');
-  const overlayText=document.getElementById('overlayText');
-  const overlayLogo=document.getElementById('overlayLogo');
-  const colorOverlay=document.getElementById('colorOverlay');
-  const fsControls=document.getElementById('fsControls');
-  const exitFs=document.getElementById('exitFs');
+    const overlaySelect=document.getElementById('overlaySelect');
+    const overlayText=document.getElementById('overlayText');
+    const overlayLogo=document.getElementById('overlayLogo');
+    const captionInput=document.getElementById('captionInput');
+    const captionColor=document.getElementById('captionColor');
+    const colorOverlay=document.getElementById('colorOverlay');
+    const fsControls=document.getElementById('fsControls');
+    const exitFs=document.getElementById('exitFs');
   const palette=['#2c6fb1','#6fb1ff','#1d3f73','#de9146','#111111','#dbb5c2','#efe5d7','#ebe9d5','#f3f0ec'];
   const filters=['none','grayscale(100%)','sepia(60%)','contrast(160%)','brightness(120%)'];
   const logos={logo1:'assets/logo-top-1.svg',logo2:'assets/logo-top-2.svg',logo3:'assets/logo-top-3.svg'};
@@ -834,8 +857,9 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   async function startCamera(){
     try{
       if(stream) stream.getTracks().forEach(t=>t.stop());
-      stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing}});
-      video.srcObject=stream;
+        stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing}});
+        video.srcObject=stream;
+        await video.play();
       analyzing=true;
       requestAnimationFrame(analyze);
       suggestion.textContent='';
@@ -884,47 +908,63 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   stopBtn?.addEventListener('click',stopCamera);
   switchBtn?.addEventListener('click',()=>{facing=facing==='user'?'environment':'user';startCamera();});
 
-  overlaySelect?.addEventListener('change',()=>{
-    overlayType=overlaySelect.value;
-    overlayText.style.display='none';
-    overlayLogo.style.display='none';
-    if(overlayType==='text'){
-      overlayText.textContent=document.getElementById('typeInput')?.value||'';
-      overlayText.style.display='block';
-    }else if(logos[overlayType]){
-      overlayLogo.src=logos[overlayType];
-      overlayLogo.style.display='block';
-    }
-  });
+    overlaySelect?.addEventListener('change',()=>{
+      overlayType=overlaySelect.value;
+      overlayText.style.display='none';
+      overlayLogo.style.display='none';
+      captionInput.style.display='none';
+      captionColor.style.display='none';
+      if(overlayType==='text'){
+        overlayText.textContent=captionInput.value;
+        overlayText.style.color=captionColor.value;
+        overlayText.style.display='block';
+        captionInput.style.display='block';
+        captionColor.style.display='block';
+      }else if(logos[overlayType]){
+        overlayLogo.src=logos[overlayType];
+        overlayLogo.style.display='block';
+      }
+    });
 
-  document.getElementById('typeInput')?.addEventListener('input',e=>{
-    if(overlayType==='text') overlayText.textContent=e.target.value;
-  });
+    captionInput?.addEventListener('input',()=>{
+      if(overlayType==='text') overlayText.textContent=captionInput.value;
+    });
+
+    captionColor?.addEventListener('input',()=>{
+      if(overlayType==='text') overlayText.style.color=captionColor.value;
+    });
 
   downloadBtn?.addEventListener('click',()=>{
     if(!stream) return;
     const w=video.videoWidth; const h=video.videoHeight;
     canvas.width=w; canvas.height=h;
     ctx.drawImage(video,0,0,w,h);
-    if(overlayType==='text' && overlayText.textContent){
-      ctx.font='40px Sora';
-      ctx.fillStyle='#fff';
-      ctx.textAlign='center';
-      const lines=overlayText.textContent.split('\n');
-      lines.forEach((line,i)=>ctx.fillText(line,w/2,h-60-(lines.length-1-i)*44));
-    }else if(logos[overlayType] && overlayLogo.complete){
-      const ow=overlayLogo.naturalWidth,oh=overlayLogo.naturalHeight;
-      const scale=120/ow; const lw=ow*scale, lh=oh*scale;
-      ctx.drawImage(overlayLogo,(w-lw)/2,h-lh-20,lw,lh);
-    }
+      if(overlayType==='text' && overlayText.textContent){
+        ctx.font='40px Sora';
+        ctx.fillStyle=captionColor.value;
+        ctx.textAlign='center';
+        const lines=overlayText.textContent.split('\n');
+        lines.forEach((line,i)=>ctx.fillText(line,w/2,h-60-(lines.length-1-i)*44));
+      }else if(logos[overlayType] && overlayLogo.complete){
+        const ow=overlayLogo.naturalWidth,oh=overlayLogo.naturalHeight;
+        const scale=120/ow; const lw=ow*scale, lh=oh*scale;
+        ctx.drawImage(overlayLogo,(w-lw)/2,h-lh-20,lw,lh);
+      }
     const a=document.createElement('a');
     a.download='photo.png';
     a.href=canvas.toDataURL('image/png');
     a.click();
   });
 
-  fullscreenBtn?.addEventListener('click',()=>{document.getElementById('photoTool').requestFullscreen();});
-  exitFs?.addEventListener('click',()=>{document.exitFullscreen();});
+    fullscreenBtn?.addEventListener('click',()=>{
+      const el=document.getElementById('photoTool');
+      if(el.requestFullscreen) el.requestFullscreen();
+      else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    });
+    exitFs?.addEventListener('click',()=>{
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    });
 
   document.addEventListener('fullscreenchange',()=>{
     const pt=document.getElementById('photoTool');
@@ -941,6 +981,29 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       colorOverlay.style.background=sw.dataset.color;
       colorOverlay.style.display='block';
     });
+  });
+})();
+
+// Light/Dark mode toggles
+(function(){
+  const light=document.getElementById('lightMode');
+  const dark=document.getElementById('darkMode');
+  light?.addEventListener('click',()=>document.body.classList.remove('dark'));
+  dark?.addEventListener('click',()=>document.body.classList.add('dark'));
+})();
+
+// Secret title logo swap
+(function(){
+  const text=document.getElementById('titleText');
+  const logo=document.getElementById('titleLogo');
+  document.querySelector('.brand h1')?.addEventListener('click',()=>{
+    if(logo.classList.contains('show')){
+      logo.classList.remove('show');
+      text.classList.remove('hidden');
+    }else{
+      text.classList.add('hidden');
+      logo.classList.add('show');
+    }
   });
 })();
 </script>
