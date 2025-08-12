@@ -62,7 +62,7 @@ img{max-width:100%;height:auto}
   box-shadow:0 0 0 6px color-mix(in srgb, var(--blue1) 12%, transparent);
 }
 /* Title readability (no condensation) */
-.brand h1{ font-weight:400; font-size:48px; margin:0; letter-spacing:.01em; line-height:1.2 }
+.brand h1{ font-weight:400; font-size:48px; margin:0; letter-spacing:.01em; line-height:1.2; text-align:center }
 .brand h1 .modak{font-family:'Modak', cursive;}
 .brand h1 .sora{font-family:'Sora', sans-serif;}
 @media(max-width:700px){ .brand h1{ font-size:32px } }
@@ -80,7 +80,7 @@ img{max-width:100%;height:auto}
 
 /* Hero */
 .hero{ position:relative; border-radius:22px; padding:28px; overflow:hidden; background:var(--card); box-shadow:var(--shadow) }
-.hero h2{ font-family:'Modak', cursive; margin:0 0 10px; font-size:28px; letter-spacing:.01em }
+.hero h2{ font-family:'Sora', sans-serif; margin:0 0 10px; font-size:28px; letter-spacing:.01em }
 .hero p{ margin:0; color:var(--muted) }
 
 /* Floating sprites — idle only */
@@ -176,7 +176,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   <header class="header">
     <div class="brand">
       <div class="dot"></div>
-      <h1><span class="modak">A GRIEF LIKE MINE</span><span class="sora"> — Brand Kit</span></h1>
+      <h1><span class="modak">A GRIEF<br>like mine</span><span class="sora"> — Brand Kit</span></h1>
     </div>
     <nav>
       <a href="#overview">Overview</a>
@@ -295,6 +295,18 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
             <option value="top-left">Top Left</option>
             <option value="top-center">Top Center</option>
             <option value="bottom-center">Bottom Center</option>
+          </select>
+        </label>
+        <button id="typeNextLogo" class="btn secondary">Next Logo</button>
+        <label>BG color
+          <select id="bgColor">
+            <option value="#ffffff">White</option>
+            <option value="#f3f0ec">Porcelain</option>
+            <option value="#2c6fb1">Blue</option>
+            <option value="#6fb1ff">Sky</option>
+            <option value="#1d3f73">Deep Blue</option>
+            <option value="#de9146">Sunset</option>
+            <option value="#dbb5c2">Rose</option>
           </select>
         </label>
         <button id="downloadPNG" class="btn secondary">Download PNG</button>
@@ -632,17 +644,21 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   const input=document.getElementById('typeInput');
   const fontSel=document.getElementById('fontSelect');
   const posSel=document.getElementById('logoPos');
+  const bgSel=document.getElementById('bgColor');
+  const nextLogo=document.getElementById('typeNextLogo');
   const canvas=document.getElementById('typeCanvas');
   const ctx=canvas.getContext('2d');
   const preview=document.getElementById('typePreview');
   const btn=document.getElementById('downloadPNG');
+  const logos=['https://i.ibb.co/N2Lr6c4s/A-Grief-Like-Mine-1x1-center.png','assets/logo-top-1.svg','assets/logo-top-2.svg','assets/logo-top-3.svg'];
+  let lidx=0;
   const logo=new Image();
   logo.crossOrigin='anonymous';
-  logo.src='https://i.ibb.co/N2Lr6c4s/A-Grief-Like-Mine-1x1-center.png';
+  logo.src=logos[lidx];
 
   function render(){
     ctx.clearRect(0,0,3000,3000);
-    ctx.fillStyle='#f3f0ec';
+    ctx.fillStyle=bgSel.value;
     ctx.fillRect(0,0,3000,3000);
     ctx.fillStyle='#111';
     ctx.textAlign='center';
@@ -667,7 +683,9 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     preview.style.backgroundSize='cover';
     return url;
   }
-  [input,fontSel,posSel].forEach(el=>el?.addEventListener('input',render));
+  [input,fontSel,posSel,bgSel].forEach(el=>el?.addEventListener('input',render));
+  nextLogo?.addEventListener('click',()=>{ lidx=(lidx+1)%logos.length; logo.src=logos[lidx]; });
+  logo.onload=render;
   btn?.addEventListener('click',()=>{const url=render();const a=document.createElement('a');a.href=url;a.download='typography.png';a.click();});
   render();
 })();
