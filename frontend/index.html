@@ -72,7 +72,7 @@ img{max-width:100%;height:auto}
 .brand h1{ font-weight:400; font-size:48px; margin:0; letter-spacing:.01em; line-height:1.2; text-align:left; cursor:pointer }
 .brand h1 #titleText{transition:opacity .4s}
 .brand h1 #titleText.hidden{opacity:0}
-.brand h1 #titleLogo{height:60px;display:none;opacity:0;transition:opacity .4s;vertical-align:middle}
+.brand h1 #titleLogo{height:100px;display:none;opacity:0;transition:opacity .4s;vertical-align:middle}
 .brand h1 #titleLogo.show{display:inline-block;opacity:1}
 .brand h1 .modak{font-family:'Modak', cursive;}
 .brand h1 .sora{font-family:'Sora', sans-serif;}
@@ -354,14 +354,15 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   <section id="kinetic" class="card" style="margin-top:22px">
     <h3 class="section">Kinetic Typography</h3>
     <div class="stage">
-      <img src="https://i.ibb.co/rGKS5vTC/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered.png" alt="Kinetic Typography" style="width:80%;height:auto"/>
-      <a class="fullscreen-link" href="https://i.ibb.co/rGKS5vTC/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered.png" aria-label="Open full image"></a>
+      <iframe src="kinetic-typography.html" title="Kinetic Typography" style="width:100%;height:100%;border:0"></iframe>
+      <a class="fullscreen-link" href="kinetic-typography.html" aria-label="Open full view"></a>
     </div>
   </section>
 
   <section id="templates" class="card" style="margin-top:22px">
     <h3 class="section">Social Templates</h3>
     <button id="cycleLogo" class="btn secondary" style="margin-bottom:14px">Next Logo</button>
+    <div id="templateColors" class="swatches" style="margin-bottom:14px"></div>
     <div class="templates">
       <div class="frame">
         <div class="canvas square"><img class="template-img" alt="Logo"><div class="ghost">1×1</div></div>
@@ -482,18 +483,10 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   const logos=[
     'https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png',
     'https://i.ibb.co/rGKS5vTC/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered.png',
-    null
+    'https://i.ibb.co/Lh8MQXSZ/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered-2.png'
   ];
   let logoIndex=0;
-  function updateLogo(){
-    const src=logos[logoIndex];
-    if(src){
-      logo.src=src;
-      logo.style.display='block';
-    }else{
-      logo.style.display='none';
-    }
-  }
+  function updateLogo(){ logo.src=logos[logoIndex]; }
   updateLogo();
 
   toggle.addEventListener('click',()=>{
@@ -590,17 +583,17 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     el.style.setProperty('--r0',rand(-22,22)+'deg');
     el.style.setProperty('--r1',rand(-28,8)+'deg');
     el.style.setProperty('--s',rand(0.8,1.2));
-    el.style.setProperty('--dur',rand(3000,4800)+'ms');
-    el.style.setProperty('--flap',rand(600,1200)+'ms');
+    el.style.setProperty('--dur',rand(4000,7000)+'ms');
+    el.style.setProperty('--flap',rand(900,1600)+'ms');
     el.innerHTML=`<svg viewBox="0 0 100 80" width="100%" height="100%"><use href="#${kind}"/></svg>`;
     layer.appendChild(el);
     requestAnimationFrame(()=>el.classList.add('fly'));
     el.addEventListener('animationend',()=>el.remove(),{once:true});
   }
-  function flock(x,y,count=8){ for(let i=0;i<count;i++) make(x,y,kinds[Math.floor(Math.random()*kinds.length)]); }
+  function flock(x,y,count=6){ for(let i=0;i<count;i++) make(x,y,kinds[Math.floor(Math.random()*kinds.length)]); }
   let last=0;
-  document.addEventListener('mousemove',e=>{const now=Date.now(); if(now-last>400){last=now; make(e.clientX,e.clientY,kinds[Math.floor(Math.random()*kinds.length)]);} });
-  document.addEventListener('click',e=>flock(e.clientX,e.clientY,10));
+  document.addEventListener('mousemove',e=>{const now=Date.now(); if(now-last>800){last=now; make(e.clientX,e.clientY,kinds[Math.floor(Math.random()*kinds.length)]);} });
+  document.addEventListener('click',e=>flock(e.clientX,e.clientY,8));
 })();
 
 // Logo upload & previews
@@ -766,12 +759,32 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   })();
 // Social template logo cycling & downloads
 (function(){
-  const logos=['assets/logo-top-1.svg','assets/logo-top-2.svg','assets/logo-top-3.svg'];
-  let idx=0;
+  const logos=[
+    'https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png',
+    'https://i.ibb.co/rGKS5vTC/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered.png',
+    'https://i.ibb.co/Lh8MQXSZ/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered-2.png'
+  ];
+  const colors=['#2c6fb1','#6fb1ff','#1d3f73','#de9146','#111111','#dbb5c2','#efe5d7','#ebe9d5','#f3f0ec'];
+  let idx=0; let currentColor='#f3f0ec';
   const imgs=document.querySelectorAll('.template-img');
+  const canvases=document.querySelectorAll('.templates .canvas');
   const ghosts=document.querySelectorAll('.canvas .ghost');
+  const colorWrap=document.getElementById('templateColors');
+
+  colors.forEach(c=>{
+    const sw=document.createElement('div');
+    sw.className='swatch';
+    sw.innerHTML=`<div class="chip" style="background:${c}"></div>`;
+    sw.addEventListener('click',()=>{
+      currentColor=c;
+      canvases.forEach(cv=>cv.style.background=c);
+    });
+    colorWrap?.appendChild(sw);
+  });
+
   function render(){
     imgs.forEach(img=>{ img.src=logos[idx]; });
+    canvases.forEach(cv=>cv.style.background=currentColor);
     ghosts.forEach(g=> g.style.display='none');
   }
   document.getElementById('cycleLogo')?.addEventListener('click',()=>{ idx=(idx+1)%logos.length; render(); });
@@ -783,6 +796,8 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     const canvas=document.createElement('canvas');
     canvas.width=w; canvas.height=h;
     const ctx=canvas.getContext('2d');
+    ctx.fillStyle=currentColor;
+    ctx.fillRect(0,0,w,h);
     const img=new Image();
     img.crossOrigin='anonymous';
     img.onload=()=>{
