@@ -184,7 +184,8 @@ button.secondary{ background:#fff; color:var(--ink); border:1px solid color-mix(
 }
 .canvas video{ max-width:80%; max-height:80%; width:auto; height:auto; object-fit:contain; object-position:center; }
 .canvas .user-media{width:100%;height:100%;object-fit:cover;max-width:none;max-height:none;position:relative;z-index:1;}
-.canvas .template-text{position:relative;z-index:2;color:#fff;font-family:'Sora',sans-serif;font-size:clamp(16px,5vw,32px);text-align:center;padding:10px;text-shadow:0 0 4px rgba(0,0,0,.6);}
+.canvas .template-img{position:relative;z-index:3;}
+.canvas .template-text{position:relative;z-index:2;color:#fff;font-family:'Sora',sans-serif;font-size:clamp(16px,5vw,32px);text-align:center;padding:10px;}
 
 /* Logo positioning helpers */
 .canvas.logo-center .template-img{width:80%;align-self:center;justify-self:center;}
@@ -193,9 +194,9 @@ button.secondary{ background:#fff; color:var(--ink); border:1px solid color-mix(
 .canvas.logo-left .template-img{width:25%;align-self:center;justify-self:start;margin-left:10px;}
 .canvas.logo-right .template-img{width:25%;align-self:center;justify-self:end;margin-right:10px;}
 
-.canvas.logo-center .template-text{align-self:end;justify-self:center;margin:0 10px 20px;text-align:center;}
-.canvas.logo-top .template-text{align-self:end;justify-self:center;margin:0 10px 20px;text-align:center;}
-.canvas.logo-bottom .template-text{align-self:start;justify-self:center;margin:20px 10px 0;text-align:center;}
+.canvas.logo-center .template-text,
+.canvas.logo-top .template-text,
+.canvas.logo-bottom .template-text{align-self:center;justify-self:center;margin:0 10px;text-align:center;}
 .canvas.logo-left .template-text{align-self:center;justify-self:end;margin:0 10px;text-align:right;max-width:70%;}
 .canvas.logo-right .template-text{align-self:center;justify-self:start;margin:0 10px;text-align:left;max-width:70%;}
 #photoExample .canvas img,
@@ -426,6 +427,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       </select>
       <button id="cycleLogo" class="btn secondary" title="Switch logo">Next Logo</button>
       <button id="toggleLogo" class="btn secondary" title="Show or hide the logo">Hide Logo</button>
+      <button id="toggleShadow" class="btn secondary" title="Toggle text shadow">Add Shadow</button>
       <button id="removeMedia" class="btn secondary" title="Remove uploaded media">Remove Media</button>
     </div>
     <div id="templateColors" class="swatches" style="margin-bottom:14px"></div>
@@ -876,7 +878,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   ];
   const colors=['#2c6fb1','#6fb1ff','#1d3f73','#de9146','#111111','#dbb5c2','#efe5d7','#ebe9d5','#f3f0ec'];
   let idx=0; let currentColor='#f3f0ec';
-  let userMedia=null; let showLogo=true;
+  let userMedia=null; let showLogo=true; let showShadow=false;
   const imgs=document.querySelectorAll('#logoTemplates .template-img');
   const canvases=document.querySelectorAll('#logoTemplates .canvas');
   const texts=document.querySelectorAll('#logoTemplates .template-text');
@@ -888,6 +890,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   const posSel=document.getElementById('templateLogoPos');
   const removeBtn=document.getElementById('removeMedia');
   const toggleBtn=document.getElementById('toggleLogo');
+  const shadowBtn=document.getElementById('toggleShadow');
   let logoPos='center';
 
   function fitText(el){
@@ -897,7 +900,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     if(!parent) return;
     let maxH=parent.clientHeight*0.9;
     if(parent.classList.contains('logo-center')||parent.classList.contains('logo-top')||parent.classList.contains('logo-bottom')){
-      maxH=parent.clientHeight*0.3;
+      maxH=parent.clientHeight*0.5;
     }
     while((el.scrollWidth>parent.clientWidth*0.9 || el.scrollHeight>maxH) && size>12){
       size-=1;
@@ -933,12 +936,13 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
         cv.prepend(clone);
       }
     });
-    texts.forEach(t=>{ t.textContent=textInput.value; t.style.fontFamily=fontSel.value; fitText(t); });
+    texts.forEach(t=>{ t.textContent=textInput.value; t.style.fontFamily=fontSel.value; t.style.textShadow=showShadow?'0 0 4px rgba(0,0,0,.6)':'none'; fitText(t); });
     ghosts.forEach(g=> g.style.display=userMedia?'none':'block');
   }
 
   document.getElementById('cycleLogo')?.addEventListener('click',()=>{ idx=(idx+1)%logos.length; render(); });
   toggleBtn?.addEventListener('click',()=>{ showLogo=!showLogo; toggleBtn.textContent=showLogo?'Hide Logo':'Show Logo'; render(); });
+  shadowBtn?.addEventListener('click',()=>{ showShadow=!showShadow; shadowBtn.textContent=showShadow?'Remove Shadow':'Add Shadow'; render(); });
   removeBtn?.addEventListener('click',()=>{ userMedia=null; upload.value=''; render(); });
   textInput?.addEventListener('input',render);
   fontSel?.addEventListener('change',render);
@@ -1008,9 +1012,8 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
           fontSize-=2;
           ctx.font=`${fontSize}px ${fontSel.value}`;
         }
-        let textX=w/2, textY=h-40, textAlign='center', textBaseline='bottom';
+        let textX=w/2, textY=h/2, textAlign='center', textBaseline='middle';
         switch(pos){
-          case 'bottom': textY=40+fontSize; textBaseline='top'; break;
           case 'left': textAlign='left'; textBaseline='middle'; textX=lx+lw+40; textY=h/2; break;
           case 'right': textAlign='right'; textBaseline='middle'; textX=lx-40; textY=h/2; break;
         }
@@ -1018,7 +1021,9 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
           ctx.fillStyle='#fff';
           ctx.textAlign=textAlign;
           ctx.textBaseline=textBaseline;
+          if(showShadow){ctx.shadowColor='rgba(0,0,0,.6)';ctx.shadowBlur=4;}
           ctx.fillText(text,textX,textY);
+          if(showShadow){ctx.shadowColor='transparent';ctx.shadowBlur=0;}
         }
         ctx.drawImage(logo,lx,ly,lw,lh);
         canvas.toBlob(b=>{const a=document.createElement('a');a.download=`AGLM_${type}.png`;a.href=URL.createObjectURL(b);a.click();URL.revokeObjectURL(a.href);});
@@ -1034,7 +1039,11 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       ctx.fillStyle='#fff';
       ctx.textAlign='center';
       ctx.textBaseline='middle';
-      if(text) ctx.fillText(text,w/2,h/2);
+      if(text){
+        if(showShadow){ctx.shadowColor='rgba(0,0,0,.6)';ctx.shadowBlur=4;}
+        ctx.fillText(text,w/2,h/2);
+        if(showShadow){ctx.shadowColor='transparent';ctx.shadowBlur=0;}
+      }
       canvas.toBlob(b=>{const a=document.createElement('a');a.download=`AGLM_${type}.png`;a.href=URL.createObjectURL(b);a.click();URL.revokeObjectURL(a.href);});
     }
   }
