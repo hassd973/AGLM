@@ -73,7 +73,7 @@ img{max-width:100%;height:auto}
 .brand h1 #titleText{transition:opacity .4s}
 .brand h1 #titleText.hidden{opacity:0}
 .brand h1 #titleLogo{height:60px;display:none;opacity:0;transition:opacity .4s;vertical-align:middle}
-.brand h1 #titleLogo.show{display:inline-block;opacity:1;height:100px}
+.brand h1 #titleLogo.show{display:inline-block;opacity:1}
 .brand h1 .modak{font-family:'Modak', cursive;}
 .brand h1 .sora{font-family:'Sora', sans-serif;}
 @media(max-width:700px){ .brand h1{ font-size:32px } }
@@ -312,13 +312,38 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     <div class="type-tool">
       <textarea id="typeInput" placeholder="Write a quote..."></textarea>
       <div class="controls">
-          <button id="fontBtn" class="btn secondary" type="button">Font: Sora</button>
+          <label>Font
+            <select id="fontSelect">
+              <option value="Sora">Sora</option>
+              <option value="Modak">Modak</option>
+            </select>
+          </label>
           <label>Font size
             <input id="fontSize" type="number" value="120" min="20" max="300" />
           </label>
-          <button id="posBtn" class="btn secondary" type="button">Logo: None</button>
+          <label>Logo position
+            <select id="logoPos">
+              <option value="none">None</option>
+              <option value="bottom-right">Bottom Right</option>
+              <option value="bottom-left">Bottom Left</option>
+            <option value="top-right">Top Right</option>
+            <option value="top-left">Top Left</option>
+            <option value="top-center">Top Center</option>
+            <option value="bottom-center">Bottom Center</option>
+          </select>
+        </label>
         <button id="typeNextLogo" class="btn secondary">Next Logo</button>
-        <button id="bgBtn" class="btn secondary" type="button">BG: White</button>
+        <label>BG color
+          <select id="bgColor">
+            <option value="#ffffff">White</option>
+            <option value="#f3f0ec">Porcelain</option>
+            <option value="#2c6fb1">Blue</option>
+            <option value="#6fb1ff">Sky</option>
+            <option value="#1d3f73">Deep Blue</option>
+            <option value="#de9146">Sunset</option>
+            <option value="#dbb5c2">Rose</option>
+          </select>
+        </label>
         <button id="downloadPNG" class="btn secondary">Download PNG</button>
       </div>
       <canvas id="typeCanvas" width="3000" height="3000"></canvas>
@@ -328,7 +353,10 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 
   <section id="kinetic" class="card" style="margin-top:22px">
     <h3 class="section">Kinetic Typography</h3>
-    <div class="stage" id="kineticStage"></div>
+    <div class="stage">
+      <img src="https://i.ibb.co/rGKS5vTC/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered.png" alt="Kinetic Typography" style="width:80%;height:auto"/>
+      <a class="fullscreen-link" href="https://i.ibb.co/rGKS5vTC/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered.png" aria-label="Open full image"></a>
+    </div>
   </section>
 
   <section id="templates" class="card" style="margin-top:22px">
@@ -682,79 +710,63 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   toggle?.addEventListener('click', toggleBG);
 })();
 
-// Typography generator
+
+  // Typography generator
   (function(){
     const input=document.getElementById('typeInput');
-    const fontBtn=document.getElementById('fontBtn');
+    const fontSel=document.getElementById('fontSelect');
     const sizeInput=document.getElementById('fontSize');
-    const posBtn=document.getElementById('posBtn');
-    const bgBtn=document.getElementById('bgBtn');
+    const posSel=document.getElementById('logoPos');
+    const bgSel=document.getElementById('bgColor');
     const nextLogo=document.getElementById('typeNextLogo');
     const canvas=document.getElementById('typeCanvas');
     const ctx=canvas.getContext('2d');
     const preview=document.getElementById('typePreview');
     const btn=document.getElementById('downloadPNG');
-    const logos=['https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png','https://i.ibb.co/rGKS5vTC/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered.png','https://i.ibb.co/Lh8MQXSZ/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered-2.png'];
-    let lidx=0; const logo=new Image(); logo.crossOrigin='anonymous'; logo.src=logos[lidx];
-
-    const fonts=['Sora','Modak']; let fIdx=0;
-    const positions=['none','bottom-right','bottom-left','top-right','top-left','top-center','bottom-center']; let pIdx=0;
-    const colors=[
-      {name:'White',val:'#ffffff'},
-      {name:'Porcelain',val:'#f3f0ec'},
-      {name:'Blue',val:'#2c6fb1'},
-      {name:'Sky',val:'#6fb1ff'},
-      {name:'Deep Blue',val:'#1d3f73'},
-      {name:'Sunset',val:'#de9146'},
-      {name:'Rose',val:'#dbb5c2'}
-    ];
-    let bIdx=0;
+    const logos=['https://i.ibb.co/N2Lr6c4s/A-Grief-Like-Mine-1x1-center.png','assets/logo-top-1.svg','assets/logo-top-2.svg','assets/logo-top-3.svg'];
+    let lidx=0;
+    const logo=new Image();
+    logo.crossOrigin='anonymous';
+    logo.src=logos[lidx];
 
     function render(){
       ctx.clearRect(0,0,3000,3000);
-      ctx.fillStyle=colors[bIdx].val;
+      ctx.fillStyle=bgSel.value;
       ctx.fillRect(0,0,3000,3000);
       ctx.fillStyle='#111';
       ctx.textAlign='center';
       ctx.textBaseline='middle';
       const fs=parseInt(sizeInput.value,10)||120;
-      ctx.font=fs+'px '+fonts[fIdx];
+      ctx.font=fs+'px '+fontSel.value;
       const lines=input.value.split('\n');
       const lh=fs*1.25;
       const start=1500 - ((lines.length-1)/2)*lh;
       lines.forEach((line,i)=>ctx.fillText(line,1500,start + i*lh));
-      if(positions[pIdx]!=='none' && logo.complete){
-        const size=300;
-        const pos=positions[pIdx];
-        const map={
-          'bottom-right':[3000-size-50,3000-size-50],
-          'bottom-left':[50,3000-size-50],
-          'top-right':[3000-size-50,50],
-          'top-left':[50,50],
-          'top-center':[(3000-size)/2,50],
-          'bottom-center':[(3000-size)/2,3000-size-50]
-        };
-        if(map[pos]) ctx.drawImage(logo,map[pos][0],map[pos][1],size,size);
-      }
+      const pos=posSel.value;
+      const size=300;
+      const map={
+        'bottom-right':[3000-size-50,3000-size-50],
+        'bottom-left':[50,3000-size-50],
+        'top-right':[3000-size-50,50],
+        'top-left':[50,50],
+        'top-center':[(3000-size)/2,50],
+        'bottom-center':[(3000-size)/2,3000-size-50]
+      };
+      if(map[pos]) ctx.drawImage(logo,map[pos][0],map[pos][1],size,size);
       const url=canvas.toDataURL('image/png');
       preview.style.backgroundImage=`url(${url})`;
       preview.style.backgroundSize='cover';
       return url;
     }
-
-    [input,sizeInput].forEach(el=>el?.addEventListener('input',render));
-    fontBtn?.addEventListener('click',()=>{fIdx=(fIdx+1)%fonts.length;fontBtn.textContent='Font: '+fonts[fIdx];render();});
-    posBtn?.addEventListener('click',()=>{pIdx=(pIdx+1)%positions.length;posBtn.textContent='Logo: '+positions[pIdx].replace('-', ' ');render();});
-    bgBtn?.addEventListener('click',()=>{bIdx=(bIdx+1)%colors.length;bgBtn.textContent='BG: '+colors[bIdx].name;render();});
-    nextLogo?.addEventListener('click',()=>{lidx=(lidx+1)%logos.length;logo.src=logos[lidx];});
+    [input,fontSel,sizeInput,posSel,bgSel].forEach(el=>el?.addEventListener('input',render));
+    nextLogo?.addEventListener('click',()=>{ lidx=(lidx+1)%logos.length; logo.src=logos[lidx]; });
     logo.onload=render;
     btn?.addEventListener('click',()=>{const url=render();const a=document.createElement('a');a.href=url;a.download='typography.png';a.click();});
     render();
   })();
-
 // Social template logo cycling & downloads
 (function(){
-  const logos=['https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png','https://i.ibb.co/rGKS5vTC/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered.png','https://i.ibb.co/Lh8MQXSZ/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered-2.png'];
+  const logos=['assets/logo-top-1.svg','assets/logo-top-2.svg','assets/logo-top-3.svg'];
   let idx=0;
   const imgs=document.querySelectorAll('.template-img');
   const ghosts=document.querySelectorAll('.canvas .ghost');
@@ -995,18 +1007,6 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       logo.classList.add('show');
     }
   });
-})();
-
-// Embed kinetic typography viewer
-(function(){
-  const stage=document.getElementById('kineticStage');
-  if(!stage) return;
-  const iframe=document.createElement('iframe');
-  iframe.style.width='100%';
-  iframe.style.height='100%';
-  iframe.style.border='0';
-  iframe.srcdoc=`<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>A GRIEF LIKE MINE — Combined (exact artwork + rigs + flock + hover)</title><style>:root{ --bg:#f7f6f3; --ink:#111; --blue1:#2c6fb1; --blue2:#6fb1ff; --blue3:#1d3f73; }html,body{height:100%}body{margin:0;background:var(--bg);display:grid;place-items:center;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}.wrap{position:relative; width:min(1100px,92vw);}.logo-svg{width:100%; height:auto; display:block;}.particles{position:absolute; inset:0; pointer-events:none}.sprite{position:absolute; width:clamp(18px,2.0vw,28px); opacity:0; transform-origin:50% 70%;filter:drop-shadow(0 1px 0 rgba(0,0,0,.12));}.sprite svg{display:block; width:100%; height:auto}.sprite .wing{ animation: flap var(--flap,460ms) ease-in-out infinite }@keyframes flap{ 0%,100%{transform:rotate(0)} 50%{transform:rotate(var(--arc,18deg))} }.sprite.fly{ animation: flight var(--dur,2800ms) cubic-bezier(.2,.6,.1,1) forwards; }@keyframes flight{0%  {opacity:0; transform:translate(var(--x,0),var(--y,0)) rotate(var(--r0,0deg)) scale(var(--s,1))}8%  {opacity:1}45% {transform:translate(calc(var(--x) + var(--mx,60px)), calc(var(--y) + var(--my,-120px))) rotate(var(--rm,-8deg)) scale(calc(var(--s,1)*.98))}100%{opacity:0; transform:translate(calc(var(--x) + var(--dx,180px)), calc(var(--y) + var(--dy,-260px))) rotate(var(--r1,-18deg)) scale(calc(var(--s,1)*.88))}}@media (prefers-reduced-motion: reduce){ .sprite,.wing{animation:none!important} }</style></head><body><div class="wrap" id="wrap"><img class="logo-svg" src="https://i.ibb.co/rGKS5vTC/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered.png" alt="Kinetic Typography"><div class="particles"></div></div><script>(function(){const wrap=document.getElementById('wrap');const particles=wrap.querySelector('.particles');const rand=(a,b)=>a+Math.random()*(b-a);function make(x,y){const el=document.createElement('div');el.className='sprite';el.style.setProperty('--x',x+'px');el.style.setProperty('--y',y+'px');el.style.setProperty('--mx',rand(40,120)+'px');el.style.setProperty('--my',rand(-160,-60)+'px');el.style.setProperty('--dx',rand(160,280)+'px');el.style.setProperty('--dy',rand(-320,-180)+'px');el.style.setProperty('--r0',rand(-22,22)+'deg');el.style.setProperty('--r1',rand(-28,8)+'deg');el.style.setProperty('--rm',rand(-10,6)+'deg');el.style.setProperty('--s',rand(0.8,1.2));el.style.setProperty('--dur',rand(2200,3400)+'ms');el.style.setProperty('--flap',rand(420,980)+'ms');el.innerHTML='<svg viewBox="0 0 100 80" width="100%" height="100%"><use href="#BIRD_RIG"/></svg>';particles.appendChild(el);requestAnimationFrame(()=>el.classList.add('fly'));el.addEventListener('animationend',()=>el.remove(),{once:true});}wrap.addEventListener('mousemove',e=>make(e.offsetX,e.offsetY));})();</script><svg width="0" height="0" aria-hidden="true" focusable="false"><symbol id="BIRD_RIG" viewBox="0 0 100 80"><path fill="var(--blue1)" d="M53,44c8,0,17-8,17-16c0-9-9-16-20-16c-10,0-18,6-21,13c-8,2-15,9-15,16c0,7,6,12,15,12c9,0,17-4,24-9z"/><path fill="var(--blue3)" d="M35,45l-18,16l10-3l-7,12l17-17z"/><path fill="var(--blue2)" d="M70,26l14-4l-10,10z"/><circle cx="61" cy="23" r="2.1" fill="#0b1d36"/><g class="wing" style="transform-origin:40px 33px; --arc:16deg"><path fill="var(--blue2)" d="M18,20c8,3,18,8,24,14c-8,0-17-1-26-3c-6-2-6-9,2-11z"/></g><g class="wing" style="transform-origin:62px 38px; --arc:16deg"><path fill="var(--blue2)" d="M42,30c10,2,21,7,28,13c-8,1-17,0-27-2c-6-2-6-9-1-11z"/></g></symbol></svg></body></html>`;
-  stage.appendChild(iframe);
 })();
 </script>
 </body>
