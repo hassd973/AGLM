@@ -183,6 +183,8 @@ button.secondary{ background:#fff; color:var(--ink); border:1px solid color-mix(
   height:auto;
 }
 .canvas video{ max-width:80%; max-height:80%; width:auto; height:auto; object-fit:contain; object-position:center; }
+.canvas .user-media{width:100%;height:100%;object-fit:cover;max-width:none;max-height:none;}
+.canvas .template-text{color:#fff;font-family:'Sora',sans-serif;font-size:32px;text-align:center;padding:10px;text-shadow:0 0 4px rgba(0,0,0,.6);}
 #photoExample .canvas img,
 #photoExample .canvas video{
   width:100%;
@@ -394,21 +396,30 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 
   <section id="templates" class="card" style="margin-top:22px">
     <h3 class="section">Social Templates</h3>
-    <button id="cycleLogo" class="btn secondary" style="margin-bottom:14px">Next Logo</button>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:center;">
+      <label for="mediaUpload" class="btn secondary">Upload Photo/Video</label>
+      <input id="mediaUpload" type="file" accept="image/*,video/*" style="display:none" />
+      <input id="templateText" type="text" placeholder="Add text" style="flex:1;min-width:120px" />
+      <select id="templateFont">
+        <option value="Sora">Sora</option>
+        <option value="Modak">Modak</option>
+      </select>
+      <button id="cycleLogo" class="btn secondary">Next Logo</button>
+    </div>
     <div id="templateColors" class="swatches" style="margin-bottom:14px"></div>
     <div class="templates" id="logoTemplates">
       <div class="frame">
-        <div class="canvas square"><img class="template-img" alt="Logo"><div class="ghost">1×1</div></div>
+        <div class="canvas square"><div class="template-text"></div><img class="template-img" alt="Logo"><div class="ghost">1×1</div></div>
         <button class="download" data-size="square">Download 1×1</button>
         <div style="font-size:12px; margin-top:6px; color:#555">Profile / Grid</div>
       </div>
       <div class="frame">
-        <div class="canvas portrait"><img class="template-img" alt="Logo"><div class="ghost">4×5</div></div>
+        <div class="canvas portrait"><div class="template-text"></div><img class="template-img" alt="Logo"><div class="ghost">4×5</div></div>
         <button class="download" data-size="portrait">Download 4×5</button>
         <div style="font-size:12px; margin-top:6px; color:#555">IG Portrait</div>
       </div>
       <div class="frame">
-        <div class="canvas landscape"><img class="template-img" alt="Logo"><div class="ghost">16×9</div></div>
+        <div class="canvas landscape"><div class="template-text"></div><img class="template-img" alt="Logo"><div class="ghost">16×9</div></div>
         <button class="download" data-size="landscape">Download 16×9</button>
         <div style="font-size:12px; margin-top:6px; color:#555">Video / YouTube</div>
       </div>
@@ -461,7 +472,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
         <button id="startBtn">Activate Camera</button>
         <button id="stopBtn">Deactivate Camera</button>
         <button id="switchBtn">Switch Camera</button>
-        <button id="filterBtn">Next Filter</button>
+        <button id="colorBtn">Next Color</button>
         <button id="downloadPhoto">Download Photo</button>
           <button id="fullscreenBtn">Full Screen</button>
           <select id="overlaySelect">
@@ -834,7 +845,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     btn?.addEventListener('click',()=>{const url=render();const a=document.createElement('a');a.href=url;a.download='typography.png';a.click();});
     render();
   })();
-// Social template logo cycling & downloads
+// Social template uploads, logo cycling & downloads
 (function(){
   const logos=[
     'https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png',
@@ -843,10 +854,15 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   ];
   const colors=['#2c6fb1','#6fb1ff','#1d3f73','#de9146','#111111','#dbb5c2','#efe5d7','#ebe9d5','#f3f0ec'];
   let idx=0; let currentColor='#f3f0ec';
+  let userMedia=null;
   const imgs=document.querySelectorAll('#logoTemplates .template-img');
   const canvases=document.querySelectorAll('#logoTemplates .canvas');
+  const texts=document.querySelectorAll('#logoTemplates .template-text');
   const ghosts=document.querySelectorAll('#logoTemplates .ghost');
   const colorWrap=document.getElementById('templateColors');
+  const upload=document.getElementById('mediaUpload');
+  const textInput=document.getElementById('templateText');
+  const fontSel=document.getElementById('templateFont');
 
   colors.forEach(c=>{
     const sw=document.createElement('div');
@@ -861,10 +877,46 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 
   function render(){
     imgs.forEach(img=>{ img.src=logos[idx]; });
-    canvases.forEach(cv=>cv.style.background=currentColor);
-    ghosts.forEach(g=> g.style.display='none');
+    canvases.forEach(cv=>{
+      cv.style.background=currentColor;
+      const old=cv.querySelector('.user-media');
+      if(old) old.remove();
+      if(userMedia){
+        const clone=userMedia.cloneNode(true);
+        clone.classList.add('user-media');
+        if(clone.tagName==='VIDEO'){
+          clone.loop=true; clone.muted=true; clone.playsInline=true; clone.play();
+        }
+        cv.prepend(clone);
+      }
+    });
+    texts.forEach(t=>{ t.textContent=textInput.value; t.style.fontFamily=fontSel.value; });
+    ghosts.forEach(g=> g.style.display=userMedia?'none':'block');
   }
+
   document.getElementById('cycleLogo')?.addEventListener('click',()=>{ idx=(idx+1)%logos.length; render(); });
+  textInput?.addEventListener('input',render);
+  fontSel?.addEventListener('change',render);
+
+  upload?.addEventListener('change',e=>{
+    const file=e.target.files?.[0];
+    if(!file) return;
+    const url=URL.createObjectURL(file);
+    if(file.type.startsWith('image/')){
+      const img=new Image();
+      img.onload=()=>{userMedia=img; render();};
+      img.src=url;
+    }else if(file.type.startsWith('video/')){
+      const vid=document.createElement('video');
+      vid.src=url;
+      vid.onloadedmetadata=()=>{
+        if(vid.duration>15){ alert('Please select a video 15s or shorter.'); return; }
+        vid.loop=true; vid.muted=true; vid.playsInline=true; vid.play();
+        userMedia=vid; render();
+      };
+    }
+  });
+
   render();
 
   function download(type){
@@ -873,23 +925,36 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     const canvas=document.createElement('canvas');
     canvas.width=w; canvas.height=h;
     const ctx=canvas.getContext('2d');
-    ctx.fillStyle=currentColor;
-    ctx.fillRect(0,0,w,h);
-    const img=new Image();
-    img.crossOrigin='anonymous';
-    img.onload=()=>{
-      let scale;
-      if(type==='landscape'){
-        scale=Math.min(1, w/img.width, h/img.height);
-      }else{
-        scale=Math.min((w*0.8)/img.width,(h*0.8)/img.height);
-      }
-      const dw=img.width*scale, dh=img.height*scale;
-      ctx.drawImage(img,(w-dw)/2,(h-dh)/2,dw,dh);
+    ctx.fillStyle=currentColor; ctx.fillRect(0,0,w,h);
+
+    if(userMedia){
+      let mw,mh;
+      if(userMedia.tagName==='IMG'){ mw=userMedia.naturalWidth; mh=userMedia.naturalHeight; }
+      else{ mw=userMedia.videoWidth; mh=userMedia.videoHeight; }
+      const scale=Math.max(w/mw,h/mh);
+      const dw=mw*scale, dh=mh*scale;
+      ctx.drawImage(userMedia,(w-dw)/2,(h-dh)/2,dw,dh);
+    }
+
+    const text=textInput.value.trim();
+    if(text){
+      ctx.font=`${w/10}px ${fontSel.value}`;
+      ctx.fillStyle='#fff';
+      ctx.textAlign='center';
+      ctx.textBaseline='bottom';
+      ctx.fillText(text,w/2,h-40);
+    }
+
+    const logo=new Image();
+    logo.crossOrigin='anonymous';
+    logo.onload=()=>{
+      const lw=w*0.2; const lh=lw*logo.height/logo.width;
+      ctx.drawImage(logo,w-lw-40,h-lh-40,lw,lh);
       canvas.toBlob(b=>{const a=document.createElement('a');a.download=`AGLM_${type}.png`;a.href=URL.createObjectURL(b);a.click();URL.revokeObjectURL(a.href);});
     };
-    img.src=logos[idx];
+    logo.src=logos[idx];
   }
+
   document.querySelectorAll('.download').forEach(btn=>btn.addEventListener('click',()=>download(btn.dataset.size)));
 })();
 
@@ -940,7 +1005,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   const ctx=canvas.getContext('2d');
   const suggestion=document.getElementById('suggestion');
   const combos=document.getElementById('combos');
-  const filterBtn=document.getElementById('filterBtn');
+    const colorBtn=document.getElementById('colorBtn');
   const startBtn=document.getElementById('startBtn');
   const stopBtn=document.getElementById('stopBtn');
   const switchBtn=document.getElementById('switchBtn');
@@ -955,10 +1020,9 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     const fsControls=document.getElementById('fsControls');
     const exitFs=document.getElementById('exitFs');
     const fsCapture=document.getElementById('fsCapture');
-  const palette=['#2c6fb1','#6fb1ff','#1d3f73','#de9146','#111111','#dbb5c2','#efe5d7','#ebe9d5','#f3f0ec'];
-  const filters=['none','grayscale(100%)','sepia(60%)','contrast(160%)','brightness(120%)'];
-  const logos={logo1:'https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png',logo2:'https://i.ibb.co/rGKS5vTC/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered.png',logo3:'https://i.ibb.co/Lh8MQXSZ/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered-2.png'};
-  let filterIndex=0;
+    const palette=['#2c6fb1','#6fb1ff','#1d3f73','#de9146','#111111','#dbb5c2','#efe5d7','#ebe9d5','#f3f0ec'];
+    const logos={logo1:'https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png',logo2:'https://i.ibb.co/rGKS5vTC/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered.png',logo3:'https://i.ibb.co/Lh8MQXSZ/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered-2.png'};
+    let colorIndex=-1;
   let stream=null;
   let facing='environment';
   let analyzing=false;
@@ -1032,9 +1096,14 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     return Math.sqrt((R-r)**2 + (G-g)**2 + (B-b)**2);
   }
 
-  filterBtn?.addEventListener('click',()=>{
-    filterIndex=(filterIndex+1)%filters.length;
-    video.style.filter=filters[filterIndex];
+  colorBtn?.addEventListener('click',()=>{
+    colorIndex=(colorIndex+1)%(palette.length+1);
+    if(colorIndex===palette.length){
+      colorOverlay.style.display='none';
+    }else{
+      colorOverlay.style.background=palette[colorIndex];
+      colorOverlay.style.display='block';
+    }
   });
 
   startBtn?.addEventListener('click',startCamera);
