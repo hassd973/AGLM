@@ -169,6 +169,16 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 .mono{ font-family:'Sora', sans-serif }
 .nowrap{ white-space:nowrap }
 .drop{ display:inline-block; padding:8px 10px; border:1px dashed color-mix(in srgb, var(--ink) 25%, transparent); border-radius:10px; font-size:12px; color:#555 }
+
+/* Photo tool */
+#photoTool{margin-top:20px;}
+#photoTool video{width:100%;max-width:480px;border-radius:16px;background:#000;}
+#photoTool .controls{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;}
+#photoTool button{padding:8px 12px;border:none;border-radius:8px;background:var(--blue1);color:#fff;font-weight:500;cursor:pointer;}
+#photoTool button:hover{background:var(--blue2);color:#111;}
+#photoTool #suggestion{margin-top:14px;font-size:18px;font-weight:600;}
+#photoTool .swatches{display:flex;gap:10px;margin-top:10px;}
+#photoTool .swatch{width:40px;height:40px;border-radius:8px;box-shadow:0 0 0 2px rgba(0,0,0,.1);}
 </style>
 </head>
 <body>
@@ -355,6 +365,16 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       <li>Palette: blues + bone neutrals; occasional rose accent.</li>
       <li>Negative space for type; keep horizon lines calm.</li>
     </ul>
+    <div id="photoTool">
+      <video id="video" autoplay playsinline></video>
+      <canvas id="canvas" width="200" height="150" style="display:none"></canvas>
+      <div class="controls">
+        <button id="filterBtn">Next Filter</button>
+        <button id="comboBtn">Suggest Color Combos</button>
+      </div>
+      <p id="suggestion">Allow camera access to begin.</p>
+      <div id="combos" class="swatches"></div>
+    </div>
   </section>
 
   <section id="exports" class="card" style="margin-top:22px">
@@ -721,6 +741,80 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     img.src=logos[idx];
   }
   document.querySelectorAll('.download').forEach(btn=>btn.addEventListener('click',()=>download(btn.dataset.size)));
+})();
+
+// Live photo color guide
+(function(){
+  const video=document.getElementById('video');
+  if(!video) return;
+  const canvas=document.getElementById('canvas');
+  const ctx=canvas.getContext('2d');
+  const suggestion=document.getElementById('suggestion');
+  const combos=document.getElementById('combos');
+  const palette=['#2c6fb1','#6fb1ff','#1d3f73','#de9146','#111111','#dbb5c2','#efe5d7','#ebe9d5','#f3f0ec'];
+  const filters=['none','grayscale(100%)','sepia(60%)','contrast(160%)','brightness(120%)'];
+  let filterIndex=0;
+
+  function luminance(hex){
+    const r=parseInt(hex.substr(1,2),16)/255;
+    const g=parseInt(hex.substr(3,2),16)/255;
+    const b=parseInt(hex.substr(5,2),16)/255;
+    return 0.2126*r+0.7152*g+0.0722*b;
+  }
+
+  function analyze(){
+    if(video.readyState>=2){
+      ctx.drawImage(video,0,0,canvas.width,canvas.height);
+      const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+      let r=0,g=0,b=0;
+      for(let i=0;i<data.length;i+=4){r+=data[i];g+=data[i+1];b+=data[i+2];}
+      const count=data.length/4;
+      r/=count;g/=count;b/=count;
+      const bright=(0.2126*r+0.7152*g+0.0722*b)/255;
+      let best=palette[0],bestScore=0;
+      palette.forEach(c=>{
+        const contrast=Math.abs(luminance(c)-bright);
+        if(contrast>bestScore){bestScore=contrast;best=c;}
+      });
+      suggestion.textContent=`Best color: ${best}`;
+      suggestion.style.color=best;
+    }
+    requestAnimationFrame(analyze);
+  }
+
+  navigator.mediaDevices.getUserMedia({video:true}).then(stream=>{
+    video.srcObject=stream;
+    requestAnimationFrame(analyze);
+  }).catch(()=>{ suggestion.textContent='Camera access is required.'; });
+
+  function colorDistance(c,r,g,b){
+    const R=parseInt(c.substr(1,2),16);
+    const G=parseInt(c.substr(3,2),16);
+    const B=parseInt(c.substr(5,2),16);
+    return Math.sqrt((R-r)**2 + (G-g)**2 + (B-b)**2);
+  }
+
+  document.getElementById('filterBtn').addEventListener('click',()=>{
+    filterIndex=(filterIndex+1)%filters.length;
+    video.style.filter=filters[filterIndex];
+  });
+
+  document.getElementById('comboBtn').addEventListener('click',()=>{
+    ctx.drawImage(video,0,0,canvas.width,canvas.height);
+    const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+    let r=0,g=0,b=0;
+    for(let i=0;i<data.length;i+=4){r+=data[i];g+=data[i+1];b+=data[i+2];}
+    const count=data.length/4;
+    r/=count;g/=count;b/=count;
+    const sorted=[...palette].sort((a,b)=>colorDistance(a,r,g,b)-colorDistance(b,r,g,b)).slice(0,3);
+    combos.innerHTML='';
+    sorted.forEach(c=>{
+      const div=document.createElement('div');
+      div.className='swatch';
+      div.style.background=c;
+      combos.appendChild(div);
+    });
+  });
 })();
 </script>
 </body>
