@@ -6,7 +6,7 @@
 <title>A GRIEF LIKE MINE — Combined (exact artwork + rigs + flock + hover)</title>
 <style>
 
-  :root{ --bg:#f7f6f3; --ink:#111; --blue1:#2c6fb1; --blue2:#6fb1ff; --blue3:#1d3f73; }
+  :root{ --bg:#f7f6f3; --ink:#111; --blue1:#2c6fb1; --blue2:#6fb1ff; --blue3:#1d3f73; --sunset:#de9146; }
   html,body{height:100%}
   body{margin:0;background:var(--bg);display:grid;place-items:center;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
   .wrap{position:relative; width:min(1100px,92vw); --windX:0deg; --windY:0deg; --flap:900ms;}
@@ -29,14 +29,17 @@
 
   /* --- rig & typography dynamics --- */
   #A_GRIEF_LIKE_MINE, #A_GRIEF_LIKE_MINE * { transform-box: fill-box; }
-  .glyph { transform-box: fill-box; transform-origin: 50% 50%; will-change: transform;
-           transition: filter .25s ease; transform: skewX(var(--windX)) skewY(var(--windY)); }
-  .glyph.react { transform: skewX(var(--windX)) skewY(var(--windY)) translateY(-2px) scale(1.02);
-                 filter: drop-shadow(0 2px 0 rgba(0,0,0,.1)); }
+  .glyph { transform-box: fill-box; transform-origin:50% 100%; will-change:transform;
+           transition:filter .25s ease; transform:rotate(var(--windX)) skewY(var(--windY)); }
+  .glyph.react { transform:rotate(var(--windX)) skewY(var(--windY)) translateY(-2px) scale(1.02);
+                 filter:drop-shadow(0 2px 0 rgba(0,0,0,.1)); }
 
   /* overlay perches for rigged creatures */
   .perch-rig{ position:absolute; pointer-events:auto; cursor:pointer; }
   .perch-rig svg{ display:block; width:100%; height:auto; }
+
+  .follow-butter{position:absolute;width:40px;height:32px;pointer-events:none;display:none;z-index:5;}
+  .follow-butter svg{display:block;width:100%;height:auto;}
 
   /* professional wing flaps */
   @keyframes proFlapNear {
@@ -638,6 +641,24 @@
 
   // Make each path/group inside the title SVG responsive on hover
   const logo = document.querySelector('#A_GRIEF_LIKE_MINE');
+  const follow=document.createElement('div');
+  follow.className='follow-butter';
+  follow.innerHTML='<svg viewBox="0 0 100 80" width="100%" height="100%" style="--blue1:var(--sunset);--blue2:var(--sunset);--blue3:var(--sunset);"><use href="#BUTTER_RIG"/></svg>';
+  wrap.appendChild(follow);
+  let fbX=0,fbY=0,fbTX=0,fbTY=0;
+  function followLoop(){
+    fbX+=(fbTX-fbX)*0.15;
+    fbY+=(fbTY-fbY)*0.15;
+    follow.style.transform=`translate(${fbX-20}px,${fbY-16}px)`;
+    requestAnimationFrame(followLoop);
+  }
+  followLoop();
+  logo?.addEventListener('mousemove',e=>{
+    const p=localPoint(e);
+    fbTX=p.x; fbTY=p.y;
+    follow.style.display='block';
+  });
+  logo?.addEventListener('mouseleave',()=>{follow.style.display='none';});
   if(logo){
     const targets = logo.querySelectorAll('path, polygon, rect, g');
     targets.forEach(node=>{

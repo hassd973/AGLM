@@ -176,6 +176,7 @@ button.secondary{ background:#fff; color:var(--ink); border:1px solid color-mix(
 .canvas.landscape{ aspect-ratio:16/9 }
 .canvas .ghost{ opacity:.22; font-family:'Modak', cursive; letter-spacing:.04em }
 .canvas img{ max-width:80%; max-height:80%; width:auto; height:auto; object-fit:contain; object-position:center; }
+.canvas.landscape .template-img{ max-width:none; max-height:100%; width:auto; height:100%; }
 .canvas video{ max-width:80%; max-height:80%; width:auto; height:auto; object-fit:contain; object-position:center; }
 #photoExample .canvas img,
 #photoExample .canvas video{
@@ -215,6 +216,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 #photoTool .fs-controls{display:none;position:absolute;top:10px;left:10px;gap:8px;align-items:center;}
 #photoTool.fullscreen .fs-controls{display:flex;}
 #photoTool .fs-controls .swatch{width:30px;height:30px;border-radius:50%;cursor:pointer;box-shadow:0 0 0 2px rgba(0,0,0,.2);}
+#photoTool .fs-controls .capture{margin-left:10px;background:rgba(0,0,0,.4);color:#fff;border:0;border-radius:50%;width:30px;height:30px;cursor:pointer;}
 #photoTool .fs-controls .exit{margin-left:10px;background:rgba(0,0,0,.4);color:#fff;border:0;border-radius:50%;width:30px;height:30px;cursor:pointer;}
 </style>
 </head>
@@ -444,9 +446,10 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       <img id="overlayLogo" class="overlay" alt="Overlay logo" style="display:none"/>
       <div id="colorOverlay"></div>
       <div id="fsControls" class="fs-controls">
-        <div class="swatch" data-color="#2c6fb1"></div>
-        <div class="swatch" data-color="#6fb1ff"></div>
-        <div class="swatch" data-color="#de9146"></div>
+        <div class="swatch"></div>
+        <div class="swatch"></div>
+        <div class="swatch"></div>
+        <button id="fsCapture" class="capture">📸</button>
         <button id="exitFs" class="exit">↩</button>
       </div>
       <div class="controls">
@@ -870,8 +873,13 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     const img=new Image();
     img.crossOrigin='anonymous';
     img.onload=()=>{
-      const scale=Math.min((w*0.8)/img.width,(h*0.8)/img.height);
-      const dw=img.width*scale; const dh=img.height*scale;
+      let scale;
+      if(type==='landscape'){
+        scale=Math.min(h/img.height,1);
+      }else{
+        scale=Math.min((w*0.8)/img.width,(h*0.8)/img.height);
+      }
+      const dw=img.width*scale, dh=img.height*scale;
       ctx.drawImage(img,(w-dw)/2,(h-dh)/2,dw,dh);
       canvas.toBlob(b=>{const a=document.createElement('a');a.download=`AGLM_${type}.png`;a.href=URL.createObjectURL(b);a.click();URL.revokeObjectURL(a.href);});
     };
@@ -941,6 +949,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     const colorOverlay=document.getElementById('colorOverlay');
     const fsControls=document.getElementById('fsControls');
     const exitFs=document.getElementById('exitFs');
+    const fsCapture=document.getElementById('fsCapture');
   const palette=['#2c6fb1','#6fb1ff','#1d3f73','#de9146','#111111','#dbb5c2','#efe5d7','#ebe9d5','#f3f0ec'];
   const filters=['none','grayscale(100%)','sepia(60%)','contrast(160%)','brightness(120%)'];
   const logos={logo1:'https://i.ibb.co/DDXtHnk4/A-Grief-Like-Mine-Top-1-transparent.png',logo2:'https://i.ibb.co/rGKS5vTC/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered.png',logo3:'https://i.ibb.co/Lh8MQXSZ/A-GRIEF-LIKE-MINE-Kinetic-Typography-transparent-Recovered-2.png'};
@@ -968,11 +977,16 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       r/=count;g/=count;b/=count;
       const sorted=[...palette].sort((a,b)=>colorDistance(a,r,g,b)-colorDistance(b,r,g,b)).slice(0,3);
       combos.innerHTML='';
-      sorted.forEach(c=>{
+      const fsSwatches=fsControls.querySelectorAll('.swatch');
+      sorted.forEach((c,i)=>{
         const div=document.createElement('div');
         div.className='swatch';
         div.style.background=c;
         combos.appendChild(div);
+        if(fsSwatches[i]){
+          fsSwatches[i].style.background=c;
+          fsSwatches[i].dataset.color=c;
+        }
       });
       const bright=(0.2126*r+0.7152*g+0.0722*b)/255;
       let best=palette[0],bestScore=0;
@@ -1048,27 +1062,29 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
       if(overlayType==='text') overlayText.style.color=captionColor.value;
     });
 
-  downloadBtn?.addEventListener('click',()=>{
+  function capture(){
     if(!stream) return;
     const w=video.videoWidth; const h=video.videoHeight;
     canvas.width=w; canvas.height=h;
     ctx.drawImage(video,0,0,w,h);
-      if(overlayType==='text' && overlayText.textContent){
-        ctx.font='40px Sora';
-        ctx.fillStyle=captionColor.value;
-        ctx.textAlign='center';
-        const lines=overlayText.textContent.split('\n');
-        lines.forEach((line,i)=>ctx.fillText(line,w/2,h-60-(lines.length-1-i)*44));
-      }else if(logos[overlayType] && overlayLogo.complete){
-        const ow=overlayLogo.naturalWidth,oh=overlayLogo.naturalHeight;
-        const scale=120/ow; const lw=ow*scale, lh=oh*scale;
-        ctx.drawImage(overlayLogo,(w-lw)/2,h-lh-20,lw,lh);
-      }
+    if(overlayType==='text' && overlayText.textContent){
+      ctx.font='40px Sora';
+      ctx.fillStyle=captionColor.value;
+      ctx.textAlign='center';
+      const lines=overlayText.textContent.split('\n');
+      lines.forEach((line,i)=>ctx.fillText(line,w/2,h-60-(lines.length-1-i)*44));
+    }else if(logos[overlayType] && overlayLogo.complete){
+      const ow=overlayLogo.naturalWidth,oh=overlayLogo.naturalHeight;
+      const scale=120/ow; const lw=ow*scale, lh=oh*scale;
+      ctx.drawImage(overlayLogo,(w-lw)/2,h-lh-20,lw,lh);
+    }
     const a=document.createElement('a');
     a.download='photo.png';
     a.href=canvas.toDataURL('image/png');
     a.click();
-  });
+  }
+  downloadBtn?.addEventListener('click',capture);
+  fsCapture?.addEventListener('click',capture);
 
     fullscreenBtn?.addEventListener('click',()=>{
       const el=document.getElementById('photoTool');
