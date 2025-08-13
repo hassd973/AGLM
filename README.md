@@ -9,7 +9,7 @@ Open `brand-guide.html` for a concise logo/color overview suitable for client re
 
 ## Updates
 
-- Social templates now accept uploaded photos or videos, let you overlay AGLM logos and custom text, support multiple aspect ratios, and export images. Video uploads are limited to 15 seconds.
+- Social templates now accept uploaded photos or recorded videos up to 60 seconds, let you overlay AGLM logos and custom text, support multiple aspect ratios, and export images or videos with overlays.
 - The photo tool's camera can cycle through brand colors with an overlay to help match the shooting environment.
 
 ## Deploying on Render
