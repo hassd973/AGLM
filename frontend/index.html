@@ -1156,7 +1156,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 
 // Break videos cycling & downloads
 (function(){
-  const videos=['assets/social%201.mp4','assets/social%202.mp4','assets/social%203.mp4'];
+  const videos=['assets/social 1.mp4','assets/social 2.mp4','assets/social 3.mp4'];
   const colors=['#2c6fb1','#6fb1ff','#1d3f73','#de9146','#111111','#dbb5c2','#efe5d7','#ebe9d5','#f3f0ec'];
   let vidIdx=0; let currentColor='#f3f0ec';
   const vids=document.querySelectorAll('.break-video');
@@ -1187,11 +1187,17 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
     v.addEventListener('touchstart',e=>{ toggle(); e.preventDefault(); });
   });
 
-  document.querySelectorAll('.download-vid').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('.download-vid').forEach(btn=>btn.addEventListener('click',async()=>{
+    const response=await fetch(videos[vidIdx]);
+    const blob=await response.blob();
+    const url=URL.createObjectURL(blob);
     const a=document.createElement('a');
-    a.href=videos[vidIdx];
+    a.href=url;
     a.download=`AGLM_break_${btn.dataset.size}.mp4`;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }));
 })();
 
