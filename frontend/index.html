@@ -524,6 +524,24 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
         <div style="font-size:12px; margin-top:6px; color:#555">Video / YouTube</div>
       </div>
     </div>
+    <h4 style="margin-top:30px">Instagram Carousel Generator</h4>
+    <div id="aglm-carousel-controls" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:flex-start;">
+      <select id="aglm-template-type" title="Template type">
+        <option value="event">Event Announcement</option>
+        <option value="save">Save the Date</option>
+      </select>
+      <select id="aglm-aspect" title="Aspect ratio">
+        <option value="square">Square 1080×1080</option>
+        <option value="portrait">Portrait 1080×1350</option>
+      </select>
+      <input id="aglm-headline" type="text" placeholder="Headline" style="flex:1;min-width:120px" />
+      <textarea id="aglm-details" placeholder="Details" style="flex:1;min-width:120px"></textarea>
+      <input id="aglm-bg-url" type="url" placeholder="Background image URL (optional)" style="flex:1;min-width:120px" />
+      <button id="aglm-generate" class="btn secondary">Generate</button>
+      <button id="aglm-download" class="btn secondary">Download PNG</button>
+      <button id="aglm-print" class="btn secondary">Print/Save PDF</button>
+    </div>
+    <canvas id="aglm-carousel-canvas" width="1080" height="1080" style="width:100%;max-width:540px;border-radius:12px;box-shadow:var(--shadow);background:#fff;"></canvas>
   </section>
 
   <section id="photos" class="card" style="margin-top:22px">
@@ -582,6 +600,12 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
         </div>
       </div>
     </div>
+    <h4>Do</h4>
+    <div id="aglm-do-gallery" class="templates"></div>
+    <iframe id="aglm-pinterest" src="https://assets.pinterest.com/ext/embed.html?id=4ARHEk46o" loading="lazy" style="width:100%;border:0;height:400px;margin-top:14px;"></iframe>
+    <h4 style="margin-top:20px">Don't</h4>
+    <input id="aglm-dont-input" type="file" accept="image/png,image/jpeg,image/webp,video/mp4" multiple />
+    <div id="aglm-dont-gallery" class="templates" style="margin-top:14px;"></div>
   </section>
 
   <section id="exports" class="card" style="margin-top:22px">
@@ -1655,6 +1679,141 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
   v.addEventListener('click',toggle);
   v.addEventListener('touchstart',e=>{ toggle(); e.preventDefault(); });
 })();
+</script>
+<style>
+  #aglm-do-gallery, #aglm-dont-gallery{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px}
+  #aglm-dont-input{margin-top:10px}
+  #aglm-pinterest{margin-top:14px;border-radius:12px}
+  #aglm-carousel-controls textarea{min-height:60px}
+  #aglm-carousel-canvas{margin-top:14px}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  const doGallery=document.getElementById('aglm-do-gallery');
+  if(doGallery){
+    const section=document.getElementById('photos');
+    const media=[...section.querySelectorAll('img,video')].filter(el=>{
+      const src=el.currentSrc||el.src||el.getAttribute('src');
+      return src&&/(\.png|\.jpe?g|\.webp|\.mp4)$/i.test(src)&&!el.closest('#aglm-do-gallery')&&!el.closest('#aglm-dont-gallery');
+    });
+    media.forEach(el=>{
+      const clone=el.cloneNode(true);
+      if(clone.tagName.toLowerCase()==='video'){
+        clone.removeAttribute('id');
+        clone.setAttribute('muted','');
+        clone.setAttribute('playsinline','');
+        clone.setAttribute('loop','');
+        clone.setAttribute('autoplay','');
+      }
+      const frame=document.createElement('div');
+      frame.className='frame';
+      const canvas=document.createElement('div');
+      canvas.className='canvas square';
+      canvas.appendChild(clone);
+      frame.appendChild(canvas);
+      doGallery.appendChild(frame);
+    });
+  }
+
+  const key='aglm-dont-items';
+  const dontInput=document.getElementById('aglm-dont-input');
+  const dontGallery=document.getElementById('aglm-dont-gallery');
+  const THIRTY_DAYS=30*24*60*60*1000;
+  let items=[];
+  try{items=JSON.parse(localStorage.getItem(key)||'[]');}catch(e){items=[];}
+  const now=Date.now();
+  items=items.filter(i=>now-i.time<THIRTY_DAYS);
+  localStorage.setItem(key,JSON.stringify(items));
+  function renderDont(){
+    if(!dontGallery) return;
+    dontGallery.innerHTML='';
+    items.forEach(it=>{
+      const frame=document.createElement('div');
+      frame.className='frame';
+      const canvas=document.createElement('div');
+      canvas.className='canvas square';
+      let el;
+      if(it.type==='video'){el=document.createElement('video');el.src=it.data;el.controls=true;}
+      else{el=document.createElement('img');el.src=it.data;}
+      canvas.appendChild(el);
+      frame.appendChild(canvas);
+      dontGallery.appendChild(frame);
+    });
+  }
+  renderDont();
+  dontInput?.addEventListener('change',e=>{
+    const files=[...e.target.files];
+    files.forEach(f=>{
+      const r=new FileReader();
+      r.onload=ev=>{
+        items.push({type:f.type.startsWith('video')?'video':'image',data:ev.target.result,time:Date.now()});
+        localStorage.setItem(key,JSON.stringify(items));
+        renderDont();
+      };
+      r.readAsDataURL(f);
+    });
+    dontInput.value='';
+  });
+
+  const canvas=document.getElementById('aglm-carousel-canvas');
+  const ctx=canvas?.getContext('2d');
+  function wrapText(text,x,y,maxWidth,lineHeight){
+    const words=text.split(' ');let line='';
+    for(let n=0;n<words.length;n++){
+      const test=line+words[n]+' ';
+      if(ctx.measureText(test).width>maxWidth&&n>0){ctx.fillText(line,x,y);line=words[n]+' ';y+=lineHeight;}else{line=test;}
+    }
+    ctx.fillText(line,x,y);
+  }
+  function draw(){
+    if(!ctx) return;
+    const type=document.getElementById('aglm-template-type').value;
+    const aspect=document.getElementById('aglm-aspect').value;
+    const headline=document.getElementById('aglm-headline').value;
+    const details=document.getElementById('aglm-details').value;
+    const bg=document.getElementById('aglm-bg-url').value;
+    const w=1080,h=aspect==='square'?1080:1350;
+    canvas.width=w;canvas.height=h;
+    ctx.fillStyle='#0C3C57';
+    ctx.fillRect(0,0,w,h);
+    const finish=()=>{
+      ctx.fillStyle='#D7A86E';
+      ctx.fillRect(0,h-200,w,200);
+      ctx.fillStyle='#fff';
+      ctx.textAlign='center';
+      ctx.font='bold 80px Modak, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif';
+      ctx.fillText('AGLM',w/2,120);
+      ctx.font='bold 70px Modak, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif';
+      ctx.fillText(headline,w/2,h/2);
+      ctx.font='40px system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif';
+      wrapText(details,w/2,h/2+80,w*0.8,50);
+      ctx.font='italic 40px system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif';
+      const footer=type==='save'?'Save the Date':'Event Announcement';
+      ctx.fillText(footer,w/2,h-80);
+    };
+    if(bg){
+      const img=new Image();
+      img.crossOrigin='anonymous';
+      img.onload=()=>{ctx.globalAlpha=0.25;ctx.drawImage(img,0,0,w,h);ctx.globalAlpha=1;finish();};
+      img.onerror=finish;
+      img.src=bg;
+    }else finish();
+  }
+  document.getElementById('aglm-generate')?.addEventListener('click',draw);
+  document.getElementById('aglm-download')?.addEventListener('click',()=>{
+    const link=document.createElement('a');
+    link.download='aglm-carousel.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+  });
+  document.getElementById('aglm-print')?.addEventListener('click',()=>{
+    const w=window.open('');
+    w.document.write('<img src="'+canvas.toDataURL('image/png')+'" style="width:100%">');
+    w.document.close();
+    w.focus();
+    w.print();
+  });
+});
 </script>
 </body>
 </html>
