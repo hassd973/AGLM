@@ -526,6 +526,8 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
         <div style="font-size:12px; margin-top:6px; color:#555">Video / YouTube</div>
       </div>
     </div>
+    <h4 style="margin-top:30px">Soft Bloom Art Generator</h4>
+    <iframe src="art-generator.html" style="width:100%;max-width:100%;height:600px;border:0;border-radius:12px;box-shadow:var(--shadow);"></iframe>
     <h4 style="margin-top:30px">Instagram Carousel Generator</h4>
     <div id="aglm-carousel-controls" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:flex-start;">
       <select id="aglm-template-type" title="Template type">
@@ -1352,7 +1354,7 @@ footer{ margin-top:30px; color:#666; font-size:12px; text-align:center }
 
 // Break videos cycling & downloads
 (function(){
-  const videos=['assets/social 1.mp4','assets/social 2.mp4','assets/social 3.mp4'];
+  const videos=Array.from({length:60},(_,i)=>`assets/social ${i+1}.mp4`);
   const colors=['#2c6fb1','#6fb1ff','#1d3f73','#de9146','#111111','#dbb5c2','#efe5d7','#ebe9d5','#f3f0ec'];
   let vidIdx=0; let currentColor='#f3f0ec';
   const vids=document.querySelectorAll('.break-video');
