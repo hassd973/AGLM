@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Soft Bloom – Canvas Art Generator</title>
+<style>
+  :root {
+    --bg: #0b0b10;
+    --panel: #12121a;
+    --muted: #8c8ca3;
+    --accent: #2f8cff; /* brand-ish blue */
+    --ring: #2b2b3a;
+  }
+  html, body {height: 100%;}
+  body {
+    margin: 0; background: var(--bg); color: #e7e7f0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+    display: grid; grid-template-columns: 360px 1fr; gap: 16px; padding: 16px;
+  }
+  @media (max-width: 1000px) { body { grid-template-columns: 1fr; } }
+  .panel { background: var(--panel); border: 1px solid var(--ring); border-radius: 16px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+  .panel h1 {font-size: 20px; margin: 0 0 8px 0}
+  .panel p {color: var(--muted); margin-top: 6px}
+  .grid {display: grid; grid-template-columns: 1fr 1fr; gap: 8px;}
+  .row {display: contents;}
+  label {font-size: 12px; color: var(--muted)}
+  input[type="number"], input[type="text"], select { width: 100%; background: #0f0f15; color: #e7e7f0; border: 1px solid var(--ring); border-radius: 8px; padding: 8px; }
+  input[type="range"]{ width: 100%; }
+  .full {grid-column: 1 / -1}
+  button{background: var(--accent); color:white; border:none; border-radius: 10px; padding:10px 12px; cursor:pointer}
+  button.secondary{ background: #1c1c27; border:1px solid var(--ring); color: #e7e7f0 }
+  .canvas-wrap { position: relative; background:#0f0f15; border:1px solid var(--ring); border-radius: 16px; overflow:hidden; display:grid; place-items:center; }
+  .bar{display:flex; gap:8px; flex-wrap: wrap}
+  .bar > *{flex:1}
+  .note{font-size:12px; color:var(--muted)}
+  .howto{margin-top:12px; padding-top:12px; border-top:1px dashed var(--ring); color:#cfd1e6}
+  .howto li{margin:6px 0}
+</style>
+</head>
+<body>
+  <aside class="panel">
+    <h1>Soft Bloom – Canvas Art Generator</h1>
+    <p>Create fuzzy, glowing, petal-like art for posts, stories, and streams. Export still PNGs with transparency or record MP4/WebM videos directly in your browser.</p>
+
+    <div class="grid" id="controls">
+      <!-- Size + Scale -->
+      <div class="row full">
+        <label>Size Preset</label>
+        <select id="sizePreset">
+          <option value="1080x1080">Instagram Square (1080×1080)</option>
+          <option value="1080x1350" selected>Instagram Portrait (1080×1350, 4:5)</option>
+          <option value="1080x1920">Story/Reel/Short (1080×1920, 9:16)</option>
+          <option value="1280x720">YouTube Thumb (1280×720, 16:9)</option>
+          <option value="1920x1080">Full HD (1920×1080, 16:9)</option>
+          <option value="custom">Custom…</option>
+        </select>
+      </div>
+      <div class="row">
+        <label>Width</label>
+        <input id="width" type="number" min="128" value="1080" />
+      </div>
+      <div class="row">
+        <label>Height</label>
+        <input id="height" type="number" min="128" value="1350" />
+      </div>
+      <div class="row full">
+        <label>Render Scale (preview quality)</label>
+        <input id="renderScale" type="range" min="0.3" max="1.0" step="0.05" value="0.6" />
+      </div>
+
+      <!-- Seed and Palette Presets -->
+      <div class="row">
+        <label>Seed</label>
+        <input id="seed" type="number" value="7" />
+      </div>
+      <div class="row">
+        <label>&nbsp;</label>
+        <button id="randSeed" class="secondary">Randomize</button>
+      </div>
+
+      <div class="row">
+        <label>Palette Preset</label>
+        <select id="palettePreset">
+          <option value="bluebird" selected>Blue Bird (Brand)</option>
+          <option value="midnight">Midnight Indigo</option>
+          <option value="glacier">Glacier Ice</option>
+          <option value="custom">Custom…</option>
+        </select>
+      </div>
+      <div class="row">
+        <label>&nbsp;</label>
+        <button id="applyPreset" class="secondary">Apply</button>
+      </div>
+
+      <!-- Palette (defaults set to brand neutrals/blues) -->
+      <div class="row">
+        <label>Background</label>
+        <input id="bg" type="text" value="#0e1525" />
+      </div>
+      <div class="row">
+        <label>Halo Deep</label>
+        <input id="deep" type="text" value="#0b3a8a" />
+      </div>
+      <div class="row">
+        <label>Halo Light</label>
+        <input id="light" type="text" value="#d9e6ff" />
+      </div>
+      <div class="row">
+        <label>Core Warm</label>
+        <input id="warm" type="text" value="#2aa7ff" />
+      </div>
+      <div class="row">
+        <label>Core Hot</label>
+        <input id="hot" type="text" value="#00e6ff" />
+      </div>
+
+      <!-- Shape selector -->
+      <div class="row full">
+        <label>Shape</label>
+        <select id="shape">
+          <option value="bloom" selected>Soft Bloom (Default)</option>
+          <option value="bird">Bird Silhouette</option>
+        </select>
+      </div>
+
+      <!-- Shape controls -->
+      <div class="row">
+        <label>Lobes</label>
+        <input id="lobes" type="number" min="1" max="8" value="4" />
+      </div>
+      <div class="row">
+        <label>Ring Radius</label>
+        <input id="ring" type="range" min="0.05" max="0.6" step="0.01" value="0.3" />
+      </div>
+      <div class="row">
+        <label>Lobe Sigma</label>
+        <input id="lobeSigma" type="range" min="0.05" max="0.5" step="0.005" value="0.22" />
+      </div>
+      <div class="row">
+        <label>Center Sigma</label>
+        <input id="centerSigma" type="range" min="0.05" max="0.5" step="0.005" value="0.14" />
+      </div>
+      <div class="row">
+        <label>Halo Sigma</label>
+        <input id="haloSigma" type="range" min="0.05" max="0.8" step="0.005" value="0.4" />
+      </div>
+      <div class="row">
+        <label>Lobe Jitter</label>
+        <input id="jitter" type="range" min="0" max="0.6" step="0.01" value="0.25" />
+      </div>
+      <div class="row">
+        <label>Anisotropy</label>
+        <input id="anisotropy" type="range" min="0" max="0.6" step="0.01" value="0.15" />
+      </div>
+      <div class="row">
+        <label>Rotation (deg)</label>
+        <input id="rotation" type="number" value="12" />
+      </div>
+
+      <!-- Look controls -->
+      <div class="row">
+        <label>White Rim Level</label>
+        <input id="whiteRim" type="range" min="0.1" max="0.9" step="0.01" value="0.55" />
+      </div>
+      <div class="row">
+        <label>Blue Halo Level</label>
+        <input id="blueHalo" type="range" min="0.05" max="0.9" step="0.01" value="0.35" />
+      </div>
+      <div class="row">
+        <label>Saturation</label>
+        <input id="saturation" type="range" min="0" max="2" step="0.01" value="1.05" />
+      </div>
+      <div class="row">
+        <label>Contrast</label>
+        <input id="contrast" type="range" min="0.5" max="2" step="0.01" value="1.05" />
+      </div>
+      <div class="row">
+        <label>Grain</label>
+        <input id="grain" type="range" min="0" max="0.5" step="0.01" value="0.12" />
+      </div>
+      <div class="row">
+        <label>Vignette</label>
+        <input id="vignette" type="range" min="0" max="1" step="0.01" value="0.0" />
+      </div>
+
+      <!-- Animation controls -->
+      <div class="row">
+        <label>Drift</label>
+        <input id="drift" type="range" min="0" max="0.6" step="0.01" value="0.18" />
+      </div>
+      <div class="row">
+        <label>Pulse</label>
+        <input id="pulse" type="range" min="0" max="0.5" step="0.01" value="0.08" />
+      </div>
+      <div class="row">
+        <label>FPS (record)</label>
+        <input id="fps" type="number" value="24" />
+      </div>
+      <div class="row">
+        <label>Duration (s)</label>
+        <input id="duration" type="number" value="4" />
+      </div>
+
+      <!-- Logo overlay controls -->
+      <div class="row full">
+        <label>Logo Overlay</label>
+        <select id="logoSelect">
+          <option value="none" selected>None</option>
+          <option value="0">Logo 1</option>
+          <option value="1">Logo 2</option>
+          <option value="2">Logo 3</option>
+        </select>
+      </div>
+      <div class="row">
+        <label>Logo Size</label>
+        <input id="logoSize" type="number" value="200" />
+      </div>
+      <div class="row">
+        <label>Logo Position</label>
+        <select id="logoPos">
+          <option value="bottom-right" selected>Bottom Right</option>
+          <option value="bottom-left">Bottom Left</option>
+          <option value="top-right">Top Right</option>
+          <option value="top-left">Top Left</option>
+          <option value="center">Center</option>
+        </select>
+      </div>
+
+      <div class="row full bar">
+        <button id="btnRender">Render Still (PNG)</button>
+        <button id="btnToggle" class="secondary">Start/Stop Live</button>
+        <button id="btnRecord" class="secondary">Record Video (MP4)</button>
+      </div>
+      <p class="note full">Note: Recording tries MP4/H.264 when supported by your browser; otherwise it falls back to WebM/VP9.</p>
+
+      <div class="howto full">
+        <strong>How to use</strong>
+        <ol>
+          <li>In the sidebar, choose <em>Palette Preset → Blue Bird (Brand)</em> → <em>Apply</em>.</li>
+          <li>Set <em>Shape → Bird Silhouette</em>.</li>
+          <li>Tweak rim/halo/saturation as desired.</li>
+          <li>Export: <em>Render Still (PNG)</em> or <em>Record Video (MP4)</em>.</li>
+        </ol>
+      </div>
+    </div>
+  </aside>
+
+  <main class="canvas-wrap">
+    <canvas id="c"></canvas>
+  </main>
+
+<script>
+  // ---------- Utilities ----------
+  function hexToRgb(hex){
+    hex = hex.replace('#','');
+    if(hex.length===3) hex = hex.split('').map(c=>c+c).join('');
+    const num = parseInt(hex,16);
+    return [ (num>>16 & 255)/255, (num>>8 & 255)/255, (num & 255)/255 ];
+  }
+  const lerp = (a,b,t)=>a+(b-a)*t;
+  function smoothstep(edge0, edge1, x){
+    const t = (x - edge0) / (edge1 - edge0 + 1e-9);
+    const tt = Math.max(0, Math.min(1, t));
+    return tt*tt*(3-2*tt);
+  }
+  function mulberry32(a){ return function(){ let t = a += 0x6D2B79F5; t = Math.imul(t ^ t>>>15, t | 1); t ^= t + Math.imul(t ^ t>>>7, t | 61); return ((t ^ t>>>14) >>> 0) / 4294967296; } }
+
+  // ---------- Core renderer ----------
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d');
+
+  const controls = Object.fromEntries([...document.querySelectorAll('#controls [id]')].map(el=>[el.id, el]));
+  let running = false, raf = null, t0 = 0, seedRng = mulberry32(7);
+  let jitters = [];
+
+  const PRESETS = {
+    bluebird: { bg:'#0e1525', deep:'#0b3a8a', light:'#d9e6ff', warm:'#2aa7ff', hot:'#00e6ff' },
+    midnight: { bg:'#0b1020', deep:'#16215a', light:'#c7d2fe', warm:'#6ea8ff', hot:'#9db4ff' },
+    glacier:  { bg:'#0c1620', deep:'#134e6f', light:'#d8f0ff', warm:'#67d2ff', hot:'#95f0ff' }
+  };
+
+  const logos = [
+    'assets/logo-top-1.svg',
+    'assets/logo-top-2.svg',
+    'assets/logo-top-3.svg'
+  ].map(src=>{ const img=new Image(); img.src=src; return img; });
+
+  function currentSettings(){
+    const [wPreset,hPreset] = (controls.sizePreset.value==='custom') ? [parseInt(controls.width.value), parseInt(controls.height.value)] : controls.sizePreset.value.split('x').map(Number);
+    return {
+      width: wPreset, height: hPreset,
+      renderScale: parseFloat(controls.renderScale.value),
+      seed: parseInt(controls.seed.value),
+      shape: controls.shape.value,
+      palette: {
+        background: hexToRgb(controls.bg.value),
+        halo_deep: hexToRgb(controls.deep.value),
+        halo_light: hexToRgb(controls.light.value),
+        core_warm: hexToRgb(controls.warm.value),
+        core_hot: hexToRgb(controls.hot.value),
+      },
+      lobes: parseInt(controls.lobes.value),
+      ring: parseFloat(controls.ring.value),
+      lobeSigma: parseFloat(controls.lobeSigma.value),
+      centerSigma: parseFloat(controls.centerSigma.value),
+      haloSigma: parseFloat(controls.haloSigma.value),
+      jitter: parseFloat(controls.jitter.value),
+      anisotropy: parseFloat(controls.anisotropy.value),
+      rotation: parseFloat(controls.rotation.value) * Math.PI/180,
+      whiteRim: parseFloat(controls.whiteRim.value),
+      blueHalo: parseFloat(controls.blueHalo.value),
+      saturation: parseFloat(controls.saturation.value),
+      contrast: parseFloat(controls.contrast.value),
+      grain: parseFloat(controls.grain.value),
+      vignette: parseFloat(controls.vignette.value),
+      drift: parseFloat(controls.drift.value),
+      pulse: parseFloat(controls.pulse.value),
+      fps: parseInt(controls.fps.value),
+      duration: parseFloat(controls.duration.value),
+      logo: controls.logoSelect.value,
+      logoSize: parseInt(controls.logoSize.value)||200,
+      logoPos: controls.logoPos.value
+    }
+  }
+
+  function resizeCanvas(){
+    const s = currentSettings();
+    canvas.width = Math.round(s.width * s.renderScale);
+    canvas.height = Math.round(s.height * s.renderScale);
+    canvas.style.width = s.width + 'px';
+    canvas.style.height = s.height + 'px';
+  }
+
+  controls.sizePreset.addEventListener('change', () => {
+    if(controls.sizePreset.value !== 'custom'){
+      const [w,h] = controls.sizePreset.value.split('x').map(Number);
+      controls.width.value = w; controls.height.value = h;
+    }
+    resizeCanvas();
+    draw(0);
+  });
+  ['width','height','renderScale'].forEach(id=>controls[id].addEventListener('input', ()=>{ resizeCanvas(); draw(0); }));
+
+  // Randomize seed handler
+  controls.randSeed.addEventListener('click', ()=>{
+    controls.seed.value = Math.floor(Math.random()*1e9);
+    seedRng = mulberry32(parseInt(controls.seed.value));
+    jitters = []; // force regenerate
+    draw(0);
+  });
+
+  // Preset apply handler
+  controls.applyPreset.addEventListener('click', ()=>{
+    const key = controls.palettePreset.value;
+    const p = PRESETS[key];
+    if(!p) return;
+    controls.bg.value = p.bg;
+    controls.deep.value = p.deep;
+    controls.light.value = p.light;
+    controls.warm.value = p.warm;
+    controls.hot.value = p.hot;
+    draw(0);
+  });
+
+  // change handlers for all others
+  document.querySelectorAll('#controls input, #controls select').forEach(el=>{
+    el.addEventListener('input', ()=> { if(!running) draw(0); });
+  });
+
+  function ensureJitters(lobes, jitter, rng){
+    if(jitters.length !== lobes){
+      jitters = new Array(lobes).fill(0).map(()=>({jx:(rng()*2-1)*jitter*0.15, jy:(rng()*2-1)*jitter*0.15}));
+    }
+  }
+
+  function drawBirdPath(ctx, W, H){
+    const cx = W*0.5, cy = H*0.5;
+    const s = Math.min(W,H)*0.85;
+    ctx.beginPath();
+    // Tail start
+    ctx.moveTo(cx - 0.48*s, cy + 0.02*s);
+    // Belly → beak base (lower)
+    ctx.bezierCurveTo(cx - 0.28*s, cy + 0.26*s, cx + 0.10*s, cy + 0.14*s, cx + 0.28*s, cy + 0.02*s);
+    // Beak
+    ctx.lineTo(cx + 0.50*s, cy - 0.02*s);
+    ctx.lineTo(cx + 0.28*s, cy - 0.08*s);
+    // Head / back → wing tip
+    ctx.bezierCurveTo(cx + 0.06*s, cy - 0.22*s, cx - 0.02*s, cy - 0.30*s, cx - 0.04*s, cy - 0.48*s);
+    // Wing arc back to tail
+    ctx.bezierCurveTo(cx - 0.32*s, cy - 0.30*s, cx - 0.44*s, cy - 0.12*s, cx - 0.48*s, cy + 0.02*s);
+    ctx.closePath();
+  }
+
+  function applyShapeMask(shape){
+    if(shape !== 'bird') return;
+    const W = canvas.width, H = canvas.height;
+    const mask = document.createElement('canvas');
+    mask.width = W; mask.height = H;
+    const mctx = mask.getContext('2d');
+    drawBirdPath(mctx, W, H);
+    mctx.fillStyle = 'white';
+    mctx.fill();
+    ctx.globalCompositeOperation = 'destination-in';
+    ctx.drawImage(mask, 0, 0);
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  function drawLogo(s){
+    if(s.logo==='none') return;
+    const idx=parseInt(s.logo,10);
+    const img=logos[idx];
+    if(!img.complete){ img.onload=()=>drawLogo(s); return; }
+    const size=s.logoSize;
+    const scale=size/Math.max(img.width,img.height);
+    const dw=img.width*scale; const dh=img.height*scale;
+    let lx=0,ly=0;
+    switch(s.logoPos){
+      case 'bottom-right': lx=canvas.width-dw-20; ly=canvas.height-dh-20; break;
+      case 'bottom-left': lx=20; ly=canvas.height-dh-20; break;
+      case 'top-right': lx=canvas.width-dw-20; ly=20; break;
+      case 'top-left': lx=20; ly=20; break;
+      case 'center': lx=(canvas.width-dw)/2; ly=(canvas.height-dh)/2; break;
+    }
+    ctx.drawImage(img,lx,ly,dw,dh);
+  }
+
+  function draw(t){
+    const s = currentSettings();
+    ensureJitters(s.lobes, s.jitter, seedRng);
+
+    const {width:W, height:H} = canvas;
+    const img = ctx.createImageData(W,H);
+    const data = img.data;
+
+    const aspect = W/H;
+    const cos_t = Math.cos(s.rotation), sin_t = Math.sin(s.rotation);
+
+    let fieldMin = Infinity, fieldMax = -Infinity;
+
+    // First pass: compute field and track min/max for normalization
+    const field = new Float32Array(W*H);
+
+    for(let y=0; y<H; y++){
+      for(let x=0; x<W; x++){
+        let nx = (x/(W-1)-0.5)*2*(aspect<1?1:aspect);
+        let ny = (y/(H-1)-0.5)*2*(aspect>1?1:1/aspect);
+        // rotate
+        const xr = nx*cos_t - ny*sin_t;
+        const yr = nx*sin_t + ny*cos_t;
+
+        // base center & halo
+        const center = Math.exp(-((xr*xr + yr*yr) / (2*s.centerSigma*s.centerSigma)));
+        const halo = Math.exp(-((xr*xr + yr*yr) / (2*s.haloSigma*s.haloSigma)));
+
+        // lobes sum
+        let lobesSum = 0;
+        for(let i=0;i<s.lobes;i++){
+          let angle = (2*Math.PI)*i/s.lobes + (2*Math.PI)*t*0.25; // base + spin
+          angle += Math.sin(2*Math.PI*t + i) * s.drift * 0.8;
+          const r = s.ring * (1.0 + s.pulse*0.4*Math.sin(2*Math.PI*(t + i/s.lobes)));
+          const cx = r * Math.cos(angle) + jitters[i].jx;
+          const cy = r * Math.sin(angle) + jitters[i].jy;
+          const stretch = 1.0 + s.anisotropy * Math.sin(angle*3.0 + t*4.0);
+          const sigx = s.lobeSigma * stretch;
+          const sigy = s.lobeSigma / stretch;
+          const dx = xr - cx, dy = yr - cy;
+          lobesSum += Math.exp(-((dx*dx)/(2*sigx*sigx) + (dy*dy)/(2*sigy*sigy)));
+        }
+        let f = 0.55*halo + 0.35*center + 0.75*lobesSum;
+        field[y*W+x] = f;
+        if(f<fieldMin) fieldMin=f; if(f>fieldMax) fieldMax=f;
+      }
+    }
+
+    // Normalize + contrast + vignette
+    const inv = 1/(fieldMax - fieldMin + 1e-9);
+    for(let i=0;i<field.length;i++){
+      let v = (field[i]-fieldMin)*inv; // 0..1
+      if(s.contrast!==1){ v = Math.max(0, Math.min(1, (v-0.5)*s.contrast + 0.5)); }
+      field[i] = v;
+    }
+
+    // Colorize
+    const bg = s.palette.background, deep=s.palette.halo_deep, light=s.palette.halo_light, warm=s.palette.core_warm, hot=s.palette.core_hot;
+
+    let di=0;
+    for(let y=0;y<H;y++){
+      for(let x=0;x<W;x++){
+        const nx = (x/(W-1)-0.5)*2*(aspect<1?1:aspect);
+        const ny = (y/(H-1)-0.5)*2*(aspect>1?1:1/aspect);
+        const rr = Math.hypot(nx,ny);
+
+        let f = field[y*W+x];
+        // light mapping
+        const halo_t = smoothstep(s.blueHalo-0.18, s.blueHalo+0.10, f);
+        const rim_t = smoothstep(s.whiteRim-0.10, s.whiteRim+0.06, f);
+        const core_t = smoothstep(0.60, 0.80, f);
+        const hot_t  = smoothstep(0.82, 0.95, f);
+
+        // start as background
+        let r = bg[0], g = bg[1], b = bg[2];
+        const blend = (cr,cg,cb,t)=>{ r=r*(1-t)+cr*t; g=g*(1-t)+cg*t; b=b*(1-t)+cb*t; };
+        blend(deep[0], deep[1], deep[2], halo_t);
+        blend(light[0], light[1], light[2], rim_t*halo_t);
+        blend(warm[0], warm[1], warm[2], core_t);
+        blend(hot[0],  hot[1],  hot[2],  hot_t);
+
+        // saturation
+        if(s.saturation!==1){
+          const lum = 0.2126*r + 0.7152*g + 0.0722*b;
+          r = lum + (r-lum)*s.saturation;
+          g = lum + (g-lum)*s.saturation;
+          b = lum + (b-lum)*s.saturation;
+        }
+        // vignette
+        if(s.vignette>0){
+          const vig = smoothstep(0.8, 1.2, 1.2-rr);
+          r *= (1-s.vignette) + s.vignette*vig;
+          g *= (1-s.vignette) + s.vignette*vig;
+          b *= (1-s.vignette) + s.vignette*vig;
+        }
+        // grain
+        if(s.grain>0){
+          const gn = (seedRng()*2-1)*s.grain*0.15;
+          const gn2 = (seedRng()*2-1)*s.grain*0.05;
+          const gn3 = (seedRng()*2-1)*s.grain*0.05;
+          r = Math.min(1, Math.max(0, r + gn));
+          g = Math.min(1, Math.max(0, g + gn2));
+          b = Math.min(1, Math.max(0, b + gn3));
+        }
+        data[di++] = Math.round(Math.max(0,Math.min(1,r))*255);
+        data[di++] = Math.round(Math.max(0,Math.min(1,g))*255);
+        data[di++] = Math.round(Math.max(0,Math.min(1,b))*255);
+        data[di++] = 255; // full alpha for now; shape mask applied later
+      }
+    }
+
+    ctx.putImageData(img,0,0);
+    applyShapeMask(s.shape); // Bird silhouette masking with true transparency
+    drawLogo(s);
+  }
+
+  function toggle(){ running = !running; if(running){ t0 = performance.now(); loop(); } else { cancelAnimationFrame(raf); } }
+  function loop(){
+    const s = currentSettings();
+    const elapsed = (performance.now() - t0)/1000;
+    const t = (elapsed % s.duration) / s.duration; // 0..1 over duration
+    draw(t);
+    raf = requestAnimationFrame(loop);
+  }
+
+  async function renderPNG(){
+    const s = currentSettings();
+    const tmp = document.createElement('canvas');
+    tmp.width = s.width; tmp.height = s.height;
+    const prevScale = controls.renderScale.value;
+    controls.renderScale.value = 1.0; resizeCanvas(); draw(0);
+    tmp.getContext('2d').drawImage(canvas,0,0,tmp.width,tmp.height);
+    const blob = await new Promise(res=> tmp.toBlob(res,'image/png'));
+    const url = URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement('a'), {href:url, download:`softbloom_${s.width}x${s.height}.png`});
+    a.click(); URL.revokeObjectURL(url);
+    controls.renderScale.value = prevScale; resizeCanvas(); draw(0);
+  }
+
+  async function recordVideo(){
+    const s = currentSettings();
+    const fps = s.fps; const ms = s.duration*1000;
+    const stream = canvas.captureStream(fps);
+    const mimeCandidates = [
+      'video/mp4;codecs=h264',
+      'video/mp4',
+      'video/webm;codecs=vp9',
+      'video/webm;codecs=vp8',
+      'video/webm'
+    ];
+    let mime = mimeCandidates.find(m => MediaRecorder.isTypeSupported(m));
+    if(!mime){ alert('This browser does not support MP4 or WebM recording.'); return; }
+    const rec = new MediaRecorder(stream, {mimeType: mime, videoBitsPerSecond: 6_000_000});
+    const chunks = [];
+    rec.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = () => {
+      const blob = new Blob(chunks, {type: mime});
+      const url = URL.createObjectURL(blob);
+      const ext = mime.includes('mp4') ? 'mp4' : 'webm';
+      const a = Object.assign(document.createElement('a'), {href:url, download:`softbloom_${canvas.width}x${canvas.height}_${fps}fps.${ext}`});
+      a.click(); URL.revokeObjectURL(url);
+    };
+    rec.start();
+    const start = performance.now();
+    function step(){
+      const elapsed = performance.now() - start;
+      const t = Math.min(1, elapsed / ms);
+      draw(t);
+      if(elapsed < ms) requestAnimationFrame(step); else rec.stop();
+    }
+    step();
+  }
+
+  document.getElementById('btnToggle').addEventListener('click', toggle);
+  document.getElementById('btnRender').addEventListener('click', renderPNG);
+  document.getElementById('btnRecord').addEventListener('click', recordVideo);
+
+  resizeCanvas();
+  (function(){
+    const p = PRESETS.bluebird; if(p){
+      controls.bg.value=p.bg; controls.deep.value=p.deep; controls.light.value=p.light; controls.warm.value=p.warm; controls.hot.value=p.hot;
+    }
+  })();
+  draw(0);
+</script>
+</body>
+</html>
